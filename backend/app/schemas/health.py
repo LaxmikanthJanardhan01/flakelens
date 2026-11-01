@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -10,5 +11,5 @@ class HealthResponse(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     database: str = Field(..., example="connected")
     storage: str = Field(..., example="ready")
+    docker: Optional[str] = Field(default="available", example="available")
     environment: str = Field(..., example="development")
-

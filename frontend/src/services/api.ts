@@ -43,6 +43,10 @@ export const reportsApi = {
     const response = await api.get<FlakinessReport[]>(`/reports/run/${runId}`);
     return response.data;
   },
+  analyze: async (runId: string): Promise<FlakinessReport[]> => {
+    const response = await api.post<FlakinessReport[]>(`/runs/${runId}/analyze`);
+    return response.data;
+  },
 };
 
 export default api;

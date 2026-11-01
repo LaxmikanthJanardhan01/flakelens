@@ -8,7 +8,10 @@ class FlakinessReportResponse(BaseModel):
     id: str
     test_run_id: str
     test_case_id: str
-    outcome_classification: str  # CONSISTENTLY_PASSING, CONSISTENTLY_FAILING, FLAKY
+    node_id: Optional[str] = None
+    test_name: Optional[str] = None
+    file_path: Optional[str] = None
+    outcome_classification: str  # CONSISTENTLY_PASSING, CONSISTENTLY_FAILING, FLAKY, INSUFFICIENT_DATA
     flakiness_score: float
     total_runs: int
     pass_count: int

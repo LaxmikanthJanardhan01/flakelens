@@ -36,6 +36,7 @@ storage/reports/*
 !storage/reports/.gitkeep
 storage/*.db
 storage/*.sqlite3
+storage/tmp*
 *.db
 *.sqlite3
 

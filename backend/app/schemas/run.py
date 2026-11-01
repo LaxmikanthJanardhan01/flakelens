@@ -31,21 +31,62 @@ class TestIterationResponse(BaseModel):
         from_attributes = True
 
 
-class TestRunResponse(BaseModel):
-    """Schema for test run metadata and summary counts."""
+class RunIterationResponse(BaseModel):
+    """Schema for iteration-level execution record."""
 
     id: str
-    project_id: str
-    iteration_count: int
-    shuffle_order: bool
+    test_run_id: str
+    iteration_number: int
     status: str
-    total_tests: int
-    consistently_passing_count: int
-    consistently_failing_count: int
-    flaky_tests_count: int
-    started_at: Optional[datetime] = None
+    random_order_seed: Optional[int] = None
+    duration_ms: float
+    error_message: Optional[str] = None
+    started_at: datetime
     completed_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
 
+
+class TestIterationDetailResponse(BaseModel):
+    """Schema for test iteration with joined test case metadata."""
+
+    id: str
+    test_run_id: str
+    test_case_id: str
+    node_id: str
+    test_name: str
+    file_path: str
+    iteration_number: int
+    status: str
+    duration_ms: float
+    execution_order: int
+    random_order_seed: Optional[int] = None
+    stdout: Optional[str] = None
+    stderr: Optional[str] = None
+    error_message: Optional[str] = None
+    traceback: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class TestRunResponse(BaseModel):
+    """Schema for test run metadata and live execution status."""
+
+    id: str
+    project_id: str
+    iteration_count: int
+    completed_iterations: int = 0
+    shuffle_order: bool
+    status: str
+    total_tests: int
+    consistently_passing_count: int = 0
+    consistently_failing_count: int = 0
+    flaky_tests_count: int = 0
+    insufficient_data_count: int = 0
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True

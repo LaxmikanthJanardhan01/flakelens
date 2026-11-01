@@ -1,28 +1,28 @@
 # ==============================================================================
 # FLAKELENS Test Runner Container - Base Definition
 # ==============================================================================
-# [PHASE 1 PLACEHOLDER ONLY - NOT ACTIVE IN PHASE 1]
-#
-# This file is an architectural specification placeholder for Phase 2.
-# Container lifecycle management, image builds, and air-gapped test execution
-# will be implemented strictly during Phase 2 (Dockerized Runner & Pytest Engine).
-#
-# Planned Target Specification (Phase 2):
-# ------------------------------------------------------------------------------
-# FROM python:3.11-slim
-#
-# WORKDIR /app
-#
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     build-essential \
-#  && rm -rf /var/lib/apt/lists/*
-#
-# # Test harness plugins to be injected during Phase 2 Stage A build:
-# # - pytest>=8.0.0
-# # - pytest-json-report>=1.5.0
-# # - pytest-random-order>=1.1.1
-#
-# USER 1000:1000
-# ENTRYPOINT ["pytest"]
-# ==============================================================================
+FROM python:3.11-slim
 
+# Prevent python from buffering stdout/stderr and writing bytecode
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install testing harness dependencies
+RUN pip install --no-cache-dir \
+    pytest>=8.0.0 \
+    pytest-json-report>=1.5.0 \
+    pytest-random-order>=1.1.1
+
+# Create non-root user 'flakelens' (uid 1000, gid 1000)
+RUN groupadd -g 1000 flakelens && \
+    useradd -u 1000 -g flakelens -m -s /bin/bash flakelens
+
+# Create working directory and pytest tmp cache
+WORKDIR /workspace
+RUN mkdir -p /tmp/.pytest_cache && chown -R flakelens:flakelens /tmp/.pytest_cache /workspace
+
+USER 1000:1000
+
+# Default entrypoint is pytest
+ENTRYPOINT ["pytest"]
+CMD ["--help"]

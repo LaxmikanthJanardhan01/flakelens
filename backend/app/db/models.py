@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Column,
     String,
@@ -9,6 +9,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 from backend.app.db.session import Base
@@ -17,6 +18,18 @@ from backend.app.db.session import Base
 def generate_uuid() -> str:
     """Generate a UUID4 string identifier."""
     return str(uuid.uuid4())
+
+
+class ExecutionLock(Base):
+    """Distributed execution lock table guaranteeing strictly sequential Docker runs."""
+
+    __tablename__ = "execution_locks"
+
+    lock_name = Column(String(50), primary_key=True)
+    locked_by_run_id = Column(String(36), nullable=True)
+    acquired_at = Column(DateTime, nullable=True)
+    last_heartbeat_at = Column(DateTime, nullable=True)
+    expires_at = Column(DateTime, nullable=True)
 
 
 class Project(Base):
@@ -37,6 +50,7 @@ class Project(Base):
 class TestCase(Base):
     """Represents an individual pytest test function or method discovered in a project."""
 
+    __test__ = False
     __tablename__ = "test_cases"
 
     id = Column(String(36), primary_key=True, default=generate_uuid)
@@ -55,6 +69,7 @@ class TestCase(Base):
 class TestRun(Base):
     """Represents an overarching diagnostic execution session running tests N times."""
 
+    __test__ = False
     __tablename__ = "test_runs"
 
     id = Column(String(36), primary_key=True, default=generate_uuid)
@@ -66,25 +81,59 @@ class TestRun(Base):
     consistently_passing_count = Column(Integer, default=0, nullable=False)
     consistently_failing_count = Column(Integer, default=0, nullable=False)
     flaky_tests_count = Column(Integer, default=0, nullable=False)
+    insufficient_data_count = Column(Integer, default=0, nullable=False)
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
 
     # Relationships
     project = relationship("Project", back_populates="test_runs")
+    run_iterations = relationship("RunIteration", back_populates="test_run", cascade="all, delete-orphan")
     test_iterations = relationship("TestIteration", back_populates="test_run", cascade="all, delete-orphan")
     flakiness_reports = relationship("FlakinessReport", back_populates="test_run", cascade="all, delete-orphan")
+
+    @property
+    def completed_iterations(self) -> int:
+        """Count of strictly COMPLETED iterations associated with this run."""
+        return sum(1 for r in self.run_iterations if r.status == "COMPLETED")
+
+
+class RunIteration(Base):
+    """Tracks the lifecycle of an entire iteration execution session (iteration-level record)."""
+
+    __test__ = False
+    __tablename__ = "run_iterations"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    test_run_id = Column(String(36), ForeignKey("test_runs.id", ondelete="CASCADE"), nullable=False, index=True)
+    iteration_number = Column(Integer, nullable=False)
+    status = Column(String(50), nullable=False, default="RUNNING")  # RUNNING, COMPLETED, TIMED_OUT, FAILED
+    random_order_seed = Column(Integer, nullable=True)
+    duration_ms = Column(Float, default=0.0, nullable=False)
+    error_message = Column(Text, nullable=True)
+    started_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    completed_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    test_run = relationship("TestRun", back_populates="run_iterations")
+    test_iterations = relationship("TestIteration", back_populates="run_iteration", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint("test_run_id", "iteration_number", name="uq_run_iteration_number"),
+    )
 
 
 class TestIteration(Base):
     """Stores execution evidence for a single test case run within a specific iteration."""
 
+    __test__ = False
     __tablename__ = "test_iterations"
 
     id = Column(String(36), primary_key=True, default=generate_uuid)
+    run_iteration_id = Column(String(36), ForeignKey("run_iterations.id", ondelete="CASCADE"), nullable=True, index=True)
     test_run_id = Column(String(36), ForeignKey("test_runs.id", ondelete="CASCADE"), nullable=False, index=True)
     test_case_id = Column(String(36), ForeignKey("test_cases.id", ondelete="CASCADE"), nullable=False, index=True)
     iteration_number = Column(Integer, nullable=False)
-    status = Column(String(50), nullable=False)  # PASSED, FAILED, ERROR, SKIPPED
+    status = Column(String(50), nullable=False)  # PASSED, FAILED, ERROR, TIMED_OUT, NOT_EXECUTED, SKIPPED
     duration_ms = Column(Float, default=0.0, nullable=False)
     execution_order = Column(Integer, default=0, nullable=False)
     random_order_seed = Column(Integer, nullable=True)
@@ -94,8 +143,13 @@ class TestIteration(Base):
     traceback = Column(Text, nullable=True)
 
     # Relationships
+    run_iteration = relationship("RunIteration", back_populates="test_iterations")
     test_run = relationship("TestRun", back_populates="test_iterations")
     test_case = relationship("TestCase", back_populates="test_iterations")
+
+    __table_args__ = (
+        UniqueConstraint("test_run_id", "test_case_id", "iteration_number", name="uq_test_run_case_iteration"),
+    )
 
 
 class FlakinessReport(Base):
@@ -121,3 +175,6 @@ class FlakinessReport(Base):
     test_run = relationship("TestRun", back_populates="flakiness_reports")
     test_case = relationship("TestCase", back_populates="flakiness_reports")
 
+    __table_args__ = (
+        UniqueConstraint("test_run_id", "test_case_id", name="uq_flakiness_reports_run_case"),
+    )

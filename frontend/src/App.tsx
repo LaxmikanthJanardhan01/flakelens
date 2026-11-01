@@ -9,6 +9,12 @@ import { DiffInspector } from './pages/DiffInspector';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavigationTab>('dashboard');
+  const [activeRunId, setActiveRunId] = useState<string | null>(null);
+
+  const handleRunStarted = (runId: string) => {
+    setActiveRunId(runId);
+    setActiveTab('active-run');
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
@@ -22,9 +28,14 @@ export const App: React.FC = () => {
             {activeTab === 'dashboard' && (
               <Dashboard onNavigateToNew={() => setActiveTab('new-analysis')} />
             )}
-            {activeTab === 'new-analysis' && <NewAnalysis />}
+            {activeTab === 'new-analysis' && (
+              <NewAnalysis onRunStarted={handleRunStarted} />
+            )}
             {activeTab === 'active-run' && (
-              <ActiveRun onNavigateToNew={() => setActiveTab('new-analysis')} />
+              <ActiveRun
+                runId={activeRunId || undefined}
+                onNavigateToNew={() => setActiveTab('new-analysis')}
+              />
             )}
             {activeTab === 'reports' && (
               <ReportView onNavigateToNew={() => setActiveTab('new-analysis')} />
@@ -38,4 +49,3 @@ export const App: React.FC = () => {
 };
 
 export default App;
-
