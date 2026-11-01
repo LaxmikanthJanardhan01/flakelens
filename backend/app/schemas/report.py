@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field
 
 
@@ -21,6 +21,7 @@ class FlakinessReportResponse(BaseModel):
     confidence_score: float
     rca_summary: Optional[str] = None
     recommendations: Optional[str] = None
+    supporting_evidence: Optional[Dict[str, Any]] = None
 
     class Config:
         from_attributes = True

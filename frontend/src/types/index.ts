@@ -72,5 +72,6 @@ export interface FlakinessReport {
   confidence_score: number;
   rca_summary?: string | null;
   recommendations?: string | null;
+  supporting_evidence?: Record<string, any> | null;
 }
 

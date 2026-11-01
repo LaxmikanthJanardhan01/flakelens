@@ -170,6 +170,7 @@ class FlakinessReport(Base):
     confidence_score = Column(Float, default=0.0, nullable=False)
     rca_summary = Column(Text, nullable=True)
     recommendations = Column(Text, nullable=True)
+    supporting_evidence = Column(Text, nullable=True)
 
     # Relationships
     test_run = relationship("TestRun", back_populates="flakiness_reports")

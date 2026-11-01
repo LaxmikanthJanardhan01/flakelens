@@ -581,7 +581,51 @@ The Minimum Viable Product (MVP) is laser-focused on delivering an end-to-end wo
 
 ---
 
-## 20. Getting Started (For Future Development)
+## 21. Phase 3, Milestone 5: Deterministic Root Cause Analysis (RCA) Engine
+
+FLAKELENS includes an evidence-based, deterministic Root Cause Analysis (RCA) Engine (`backend/app/core/rca_engine.py`) that analyzes persisted execution telemetry from multi-iteration test runs to identify the underlying failure mechanisms of intermittent and broken tests.
+
+### 21.1 Eight Documented Root Cause Categories
+
+| Category | Description | Primary Diagnostic Signals |
+| :--- | :--- | :--- |
+| `ORDER_DEPENDENCY` | Test outcome correlates with suite execution order under randomized shuffling. | Execution order permutation correlation identifies candidate polluter preceding test(s) appearing consistently before the target in failing iterations and rarely in passing iterations (requiring at least 2 failures and 2 passes). Labeled as heuristic candidates rather than confirmed polluters. |
+| `SHARED_STATE_POLLUTION` | Mutator test leaves dirty state, uncleaned caches, or singleton entries that corrupt subsequent tests. | State pollution signatures (`state pollution`, `dirty state`, `uncleaned fixture`, `already registered`) matched via boundary-aware regex + preceding test correlation. |
+| `TIMING_OR_RACE_CONDITION` | Test fails due to concurrency, async delays, event loop timeouts, or sleep-wait vulnerabilities. | Asynchronous/race signatures (`asyncio.exceptions.TimeoutError`, `event loop`, thread lock contention) + duration variance heuristic (coefficient of variation $CV > 0.40$ **and** absolute duration spread $\ge 200\text{ ms}$). |
+| `RESOURCE_EXHAUSTION` | Execution hits container memory caps or unclosed file descriptors. | Explicit memory or descriptor exhaustion signatures (`MemoryError`, `cgroups: out of memory`, `[Errno 24] Too many open files`). Container status `TIMED_OUT` alone is treated as an ambiguous execution symptom and does not establish resource exhaustion without corroboration. |
+| `ENVIRONMENT_DEPENDENCY` | Test relies on unconfigured environment variables, hardcoded filesystem paths, or platform specifics. | Specific environment signatures (`KeyError: 'ENV_VAR'`, `os.environ[...]`, `FileNotFoundError`, `ModuleNotFoundError`) matched via word-boundary patterns. |
+| `EXTERNAL_DEPENDENCY` | Test performs unmocked network or socket calls failing under `--network none` sandbox isolation. | `ConnectionRefusedError`, `socket.gaierror`, `requests.exceptions.ConnectionError`. |
+| `ASSERTION_OR_LOGIC_FAILURE` | Deterministic application bug or regression (100% failure rate across all iterations). | `CONSISTENTLY_FAILING` classification, static assertion error message across all executions. |
+| `UNKNOWN` | Telemetry is inconclusive, ambiguous, or execution count is insufficient ($< 2$ iterations). | No strong signature, low signal score ($< 0.35$), lack of order variation, or uncorroborated symptoms. |
+
+### 21.2 Deterministic Evidence Confidence Scoring & Contradiction Penalties
+
+The confidence metric represents **Evidence Confidence** (evidence strength) rather than calibrated statistical probability, bounded between $0.00$ and $1.00$:
+- **Consistently Passing**: Neutral $0.00$ (passing tests exhibit no failure mechanism; presented as `N/A (Deterministic Pass)` in the UI).
+- **Consistently Failing / High-Evidence Flakes**: $0.70 - 0.95$ when multiple strong signatures or permutation correlations align.
+- **Moderate Evidence**: $0.40 - 0.70$ when single or weaker signals are present.
+- **Contradiction Penalty**: If competing category evidence is observed (secondary score $\ge 0.30$), confidence is penalized proportionally ($\text{penalty} = \min(0.35, \text{second\_score} \times 0.40)$) and reported in `supporting_evidence["contradiction_penalty"]`.
+- **Low Confidence / Unknown**: $< 0.40$, sample size $< 2$ valid iterations, or uncorroborated failure telemetry.
+
+### 21.3 Structured 4-Part Summary & Actionable Recommendations
+
+Each diagnostic report generates a standardized summary:
+1. **What was observed**: Empirical outcome counts, flakiness score, and flip frequency.
+2. **Supporting telemetry**: Identified suspect preceding tests (labeled as candidate polluters via permutation correlation), duration $CV$ and absolute spread, and matched error signatures.
+3. **Category selection reasoning**: Justification for the chosen classification.
+4. **Uncertainties**: Sample size warnings, conflicting signals, or residual ambiguities.
+
+Specific remediation steps guide developers to isolate fixtures, eliminate fixed `time.sleep()`, mock network requests, and reset shared state.
+
+### 21.4 API Endpoints
+
+- `POST /api/runs/{run_id}/rca`: Triggers deterministic RCA analysis on an existing completed run. Rejects active runs with HTTP 409 Conflict.
+- `POST /api/runs/{run_id}/analyze`: Triggers combined flakiness detection and RCA diagnosis.
+- `GET /api/runs/{run_id}/reports`: Retrieves enriched reports with RCA category, evidence confidence score, 4-part summary, recommendations, and structured supporting evidence.
+
+---
+
+## 22. Getting Started (For Future Development)
 
 > *Notice: Application code and dependencies have not yet been installed. The instructions below outline the planned setup process for Phase 1.*
 

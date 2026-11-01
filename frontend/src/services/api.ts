@@ -47,6 +47,10 @@ export const reportsApi = {
     const response = await api.post<FlakinessReport[]>(`/runs/${runId}/analyze`);
     return response.data;
   },
+  rca: async (runId: string): Promise<FlakinessReport[]> => {
+    const response = await api.post<FlakinessReport[]>(`/runs/${runId}/rca`);
+    return response.data;
+  },
 };
 
 export default api;

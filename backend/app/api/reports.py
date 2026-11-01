@@ -1,3 +1,4 @@
+import json
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
@@ -10,6 +11,13 @@ router = APIRouter(prefix="/reports", tags=["Reports"])
 
 def _serialize_report(r: FlakinessReport) -> FlakinessReportResponse:
     tc = r.test_case
+    evidence_dict = None
+    if getattr(r, "supporting_evidence", None):
+        try:
+            evidence_dict = json.loads(r.supporting_evidence)
+        except Exception:
+            evidence_dict = {"raw": r.supporting_evidence}
+
     return FlakinessReportResponse(
         id=r.id,
         test_run_id=r.test_run_id,
@@ -27,6 +35,7 @@ def _serialize_report(r: FlakinessReport) -> FlakinessReportResponse:
         confidence_score=r.confidence_score,
         rca_summary=r.rca_summary,
         recommendations=r.recommendations,
+        supporting_evidence=evidence_dict,
     )
 
 

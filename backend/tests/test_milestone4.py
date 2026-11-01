@@ -622,10 +622,9 @@ class TestSyntheticSuiteEndToEndClassification:
             1 for r in reports if r.outcome_classification == "INSUFFICIENT_DATA"
         )
 
-        # Verify RCA fields strictly NULL
-        for r in reports:
-            assert r.root_cause_category is None
-            assert r.confidence_score == 0.0
-            assert r.rca_summary is None
-            assert r.recommendations is None
+        # Verify RCA fields populated post-execution in Milestone 5
+        assert fail_rep.root_cause_category == "ASSERTION_OR_LOGIC_FAILURE"
+        assert fail_rep.confidence_score >= 0.80
+        assert pass_rep.outcome_classification == "CONSISTENTLY_PASSING"
+        assert pass_rep.confidence_score == 0.0
 

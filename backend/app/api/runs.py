@@ -17,6 +17,7 @@ from backend.app.schemas.report import FlakinessReportResponse
 from backend.app.core.lock import ExecutionLockManager
 from backend.app.core.runner import ExecutionRunner
 from backend.app.core.detector import FlakinessDetector, ActiveRunAnalysisError
+from backend.app.core.rca_engine import RCAEngine
 from backend.app.api.reports import _serialize_report
 
 logger = logging.getLogger("flakelens.api.runs")
@@ -271,6 +272,9 @@ def trigger_run_analysis(run_id: str, db: Session = Depends(get_db)):
     try:
         detector = FlakinessDetector()
         reports = detector.analyze_test_run(run_id, db)
+        rca_engine = RCAEngine()
+        reports = rca_engine.analyze_test_run_rca(run_id, db)
+        db.commit()
         return [_serialize_report(r) for r in reports]
     except ActiveRunAnalysisError as e:
         raise HTTPException(
@@ -282,4 +286,45 @@ def trigger_run_analysis(run_id: str, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Analysis failed: {e}",
+        )
+
+
+@router.post("/{run_id}/rca", response_model=List[FlakinessReportResponse])
+def trigger_run_rca(run_id: str, db: Session = Depends(get_db)):
+    """
+    Explicitly trigger Root Cause Analysis (RCA) on existing flakiness reports.
+    Safeguards:
+    - Rejects analysis if the run is actively running (HTTP 409 Conflict).
+    - Idempotently updates RCA fields without modifying flakiness scores or raw telemetry.
+    """
+    run = db.query(TestRun).filter(TestRun.id == run_id).first()
+    if not run:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Test run with ID '{run_id}' not found.",
+        )
+
+    lock_mgr = ExecutionLockManager()
+    is_locked, holder_run_id = lock_mgr.is_locked()
+    if run.status == "RUNNING" or (is_locked and holder_run_id == run_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Cannot perform root cause analysis on run '{run_id}' while execution is in progress.",
+        )
+
+    try:
+        rca_engine = RCAEngine()
+        reports = rca_engine.analyze_test_run_rca(run_id, db)
+        db.commit()
+        return [_serialize_report(r) for r in reports]
+    except ActiveRunAnalysisError as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.exception(f"Error during RCA for run '{run_id}': {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Root cause analysis failed: {e}",
         )

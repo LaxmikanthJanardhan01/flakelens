@@ -149,4 +149,15 @@ def migrate_db(engine: Engine):
                 )
             )
 
+            # Check if supporting_evidence column needs to be added (Milestone 5)
+            report_cols = [c["name"] for c in inspector.get_columns("flakiness_reports")]
+            if "supporting_evidence" not in report_cols:
+                logger.info("Migrating flakiness_reports: adding column 'supporting_evidence'")
+                conn.execute(
+                    text(
+                        "ALTER TABLE flakiness_reports "
+                        "ADD COLUMN supporting_evidence TEXT"
+                    )
+                )
+
     logger.info("Database migration completed successfully.")

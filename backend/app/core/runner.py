@@ -480,6 +480,15 @@ class ExecutionRunner:
             except Exception as e:
                 logger.exception(f"Error during post-execution flakiness analysis for run '{test_run_id}': {e}")
 
+            # 10. Milestone 5: Trigger evidence-based Root Cause Analysis (RCA)
+            try:
+                from backend.app.core.rca_engine import RCAEngine
+                rca_engine = RCAEngine()
+                rca_engine.analyze_test_run_rca(test_run_id, db, allow_active=True)
+                db.commit()
+            except Exception as e:
+                logger.exception(f"Error during post-execution root cause analysis for run '{test_run_id}': {e}")
+
         except Exception as e:
             logger.exception(f"Unhandled error during test run execution '{test_run_id}': {e}")
             try:
