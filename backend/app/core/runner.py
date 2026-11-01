@@ -225,7 +225,17 @@ class ExecutionRunner:
             if not project_dir.exists() and project.source_archive_path:
                 project_dir = Path(project.source_archive_path)
 
-            test_cases = db.query(TestCase).filter(TestCase.project_id == project.id).all()
+            if test_run.target_test_case_id:
+                test_cases = (
+                    db.query(TestCase)
+                    .filter(
+                        TestCase.id == test_run.target_test_case_id,
+                        TestCase.project_id == project.id,
+                    )
+                    .all()
+                )
+            else:
+                test_cases = db.query(TestCase).filter(TestCase.project_id == project.id).all()
             if not test_cases:
                 # No tests to run
                 test_run.status = "COMPLETED"

@@ -106,7 +106,7 @@ def migrate_db(engine: Engine):
                 )
             )
 
-        # 4. Milestone 4 Migration: test_runs.insufficient_data_count
+        # 4. Milestone 4 & 6 Migration: test_runs columns
         if "test_runs" in tables:
             test_run_cols = [c["name"] for c in inspector.get_columns("test_runs")]
             if "insufficient_data_count" not in test_run_cols:
@@ -115,6 +115,47 @@ def migrate_db(engine: Engine):
                     text(
                         "ALTER TABLE test_runs "
                         "ADD COLUMN insufficient_data_count INTEGER NOT NULL DEFAULT 0"
+                    )
+                )
+
+            if "run_type" not in test_run_cols:
+                logger.info("Migrating test_runs: adding column 'run_type'")
+                conn.execute(
+                    text(
+                        "ALTER TABLE test_runs "
+                        "ADD COLUMN run_type VARCHAR(50) NOT NULL DEFAULT 'STANDARD'"
+                    )
+                )
+
+            if "baseline_run_id" not in test_run_cols:
+                logger.info("Migrating test_runs: adding column 'baseline_run_id'")
+                conn.execute(
+                    text(
+                        "ALTER TABLE test_runs "
+                        "ADD COLUMN baseline_run_id VARCHAR(36) "
+                        "REFERENCES test_runs(id) ON DELETE SET NULL"
+                    )
+                )
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS ix_test_runs_baseline_run_id "
+                        "ON test_runs(baseline_run_id)"
+                    )
+                )
+
+            if "target_test_case_id" not in test_run_cols:
+                logger.info("Migrating test_runs: adding column 'target_test_case_id'")
+                conn.execute(
+                    text(
+                        "ALTER TABLE test_runs "
+                        "ADD COLUMN target_test_case_id VARCHAR(36) "
+                        "REFERENCES test_cases(id) ON DELETE SET NULL"
+                    )
+                )
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS ix_test_runs_target_test_case_id "
+                        "ON test_runs(target_test_case_id)"
                     )
                 )
 

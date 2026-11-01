@@ -7,6 +7,8 @@ from backend.app.api.health import router as health_router
 from backend.app.api.projects import router as projects_router
 from backend.app.api.runs import router as runs_router
 from backend.app.api.reports import router as reports_router
+from backend.app.api.comparison import router as comparison_router
+from backend.app.api.verification import router as verification_router
 
 
 @asynccontextmanager
@@ -41,6 +43,8 @@ app.include_router(health_router, prefix=settings.API_V1_STR)
 app.include_router(projects_router, prefix=settings.API_V1_STR)
 app.include_router(runs_router, prefix=settings.API_V1_STR)
 app.include_router(reports_router, prefix=settings.API_V1_STR)
+app.include_router(comparison_router, prefix=settings.API_V1_STR)
+app.include_router(verification_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")

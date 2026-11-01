@@ -6,14 +6,29 @@ import { NewAnalysis } from './pages/NewAnalysis';
 import { ActiveRun } from './pages/ActiveRun';
 import { ReportView } from './pages/ReportView';
 import { DiffInspector } from './pages/DiffInspector';
+import { RunHistory } from './pages/RunHistory';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavigationTab>('dashboard');
   const [activeRunId, setActiveRunId] = useState<string | null>(null);
+  const [reportRunId, setReportRunId] = useState<string | null>(null);
+  const [compareRunAId, setCompareRunAId] = useState<string | null>(null);
+  const [compareRunBId, setCompareRunBId] = useState<string | null>(null);
 
   const handleRunStarted = (runId: string) => {
     setActiveRunId(runId);
     setActiveTab('active-run');
+  };
+
+  const handleNavigateToReport = (runId: string) => {
+    setReportRunId(runId);
+    setActiveTab('reports');
+  };
+
+  const handleNavigateToCompare = (runAId: string, runBId?: string) => {
+    setCompareRunAId(runAId);
+    if (runBId) setCompareRunBId(runBId);
+    setActiveTab('diff-inspector');
   };
 
   return (
@@ -28,6 +43,13 @@ export const App: React.FC = () => {
             {activeTab === 'dashboard' && (
               <Dashboard onNavigateToNew={() => setActiveTab('new-analysis')} />
             )}
+            {activeTab === 'history' && (
+              <RunHistory
+                onNavigateToReport={handleNavigateToReport}
+                onNavigateToCompare={handleNavigateToCompare}
+                onNavigateToNew={() => setActiveTab('new-analysis')}
+              />
+            )}
             {activeTab === 'new-analysis' && (
               <NewAnalysis onRunStarted={handleRunStarted} />
             )}
@@ -38,9 +60,18 @@ export const App: React.FC = () => {
               />
             )}
             {activeTab === 'reports' && (
-              <ReportView onNavigateToNew={() => setActiveTab('new-analysis')} />
+              <ReportView
+                initialRunId={reportRunId || undefined}
+                onNavigateToNew={() => setActiveTab('new-analysis')}
+                onNavigateToActiveRun={handleRunStarted}
+              />
             )}
-            {activeTab === 'diff-inspector' && <DiffInspector />}
+            {activeTab === 'diff-inspector' && (
+              <DiffInspector
+                initialRunAId={compareRunAId || undefined}
+                initialRunBId={compareRunBId || undefined}
+              />
+            )}
           </div>
         </main>
       </div>

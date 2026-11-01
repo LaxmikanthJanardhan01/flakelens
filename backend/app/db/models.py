@@ -82,11 +82,16 @@ class TestRun(Base):
     consistently_failing_count = Column(Integer, default=0, nullable=False)
     flaky_tests_count = Column(Integer, default=0, nullable=False)
     insufficient_data_count = Column(Integer, default=0, nullable=False)
+    run_type = Column(String(50), nullable=False, default="STANDARD")  # STANDARD, VERIFICATION
+    baseline_run_id = Column(String(36), ForeignKey("test_runs.id", ondelete="SET NULL"), nullable=True, index=True)
+    target_test_case_id = Column(String(36), ForeignKey("test_cases.id", ondelete="SET NULL"), nullable=True, index=True)
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
 
     # Relationships
     project = relationship("Project", back_populates="test_runs")
+    baseline_run = relationship("TestRun", remote_side=[id], foreign_keys=[baseline_run_id])
+    target_test_case = relationship("TestCase", foreign_keys=[target_test_case_id])
     run_iterations = relationship("RunIteration", back_populates="test_run", cascade="all, delete-orphan")
     test_iterations = relationship("TestIteration", back_populates="test_run", cascade="all, delete-orphan")
     flakiness_reports = relationship("FlakinessReport", back_populates="test_run", cascade="all, delete-orphan")

@@ -625,7 +625,51 @@ Specific remediation steps guide developers to isolate fixtures, eliminate fixed
 
 ---
 
-## 22. Getting Started (For Future Development)
+## 22. Phase 3, Milestone 6: Reports & Verification
+
+Milestone 6 delivers a complete reporting, multi-run comparison, and empirical fix verification workflow for FLAKELENS.
+
+### 22.1 Detailed Per-Run & Per-Test Telemetry Reports
+- **Per-Test Execution Timeline**: Visual iteration timeline displaying outcome status (`PASSED`, `FAILED`, `TIMED_OUT`, `SKIPPED`), duration, execution order, and deterministic random seed for every individual iteration.
+- **Console & Traceback Inspection**: Expandable modal/drawer to inspect captured `stdout`, `stderr`, error message, and formatted failure stack traces for any executed iteration.
+- **Accurate Statistical Rollups**: Computes minimum, maximum, and average execution duration ($\bar{d}$), empirical pass rate ($P = \text{pass} / \text{total}$), flakiness score ($F$), flip count ($\kappa$), and full RCA diagnosis from persisted SQLite records.
+- **Endpoint**: `GET /api/reports/run/{run_id}/detailed` and `GET /api/reports/run/{run_id}/diff/{test_case_id}`.
+
+### 22.2 Execution Comparisons (Run-to-Run Diffs)
+- **Multi-Run Transition Taxonomy**: Compares two completed execution sessions of the same target project to categorize test outcome transitions:
+  - `RECOVERED` (Fixed): Test transitioned from `FLAKY` or `CONSISTENTLY_FAILING` to `CONSISTENTLY_PASSING`.
+  - `NEWLY_FAILING` (Regression): Test transitioned from `CONSISTENTLY_PASSING` to `CONSISTENTLY_FAILING`.
+  - `NEWLY_FLAKY`: Test transitioned from deterministic passing/failing to `FLAKY`.
+  - `STILL_FLAKY`: Test exhibited intermittent failures in both runs.
+  - `STILL_FAILING`: Test failed deterministically in both runs.
+  - `UNCHANGED_PASSING`: Test remained stable and passing in both runs.
+  - `ADDED` / `REMOVED`: Tests discovered in only one of the runs.
+- **Empirical Metric Deltas**: Tracks flakiness score deltas ($\Delta F = F_B - F_A$), duration variance deltas ($\Delta\bar{d} = \bar{d}_B - \bar{d}_A$), and net suite flakiness deltas without fabricating missing historical data.
+- **Strict Validations**: Strictly rejects cross-project comparisons (HTTP 400) and active running sessions (HTTP 400).
+- **Endpoint**: `GET /api/comparison?run_a_id={id}&run_b_id={id}` (and `/api/runs/compare`).
+
+### 22.3 Fix Verification Workflow
+- **Empirical Fix Verification**: Enables developers to test and verify code fixes for previously flaky or broken tests through the existing hermetic Docker execution sandbox (`--network none`, resource caps, JSONL telemetry).
+- **Targeted Runner Execution**: Executes only the targeted test case(s) across repeated iterations ($N \ge 5$, default 10) to optimize turnaround time while preserving isolation.
+- **Anti-False-Confidence Gating**:
+  - **Never** marks a fix verified after a single passing run or with fewer than 5 valid executions (`INCONCLUSIVE`).
+  - Marks `VERIFIED_FIXED` **only** if the test achieves a 100% pass rate ($0$ failures, $0$ flips) across at least 5 valid iterations.
+  - Accurately classifies ongoing intermittency as `STILL_FLAKY` and hard regressions as `STILL_FAILING`.
+- **Endpoints**: `POST /api/verification` (launch verification session) and `GET /api/verification/{run_id}` (query verification verdict and comparison).
+
+### 22.4 Project-Wise Run History
+- **Historical Execution Catalog**: Lists past analysis sessions with multi-criteria filtering:
+  - Filter by project ID.
+  - Filter by status (`COMPLETED`, `RUNNING`, `FAILED`, `CANCELLED`, `TIMED_OUT`).
+  - Filter by run type (`STANDARD` vs `VERIFICATION`).
+  - Substring search across project names and run IDs.
+  - Dynamic sorting by execution time (`started_at`), duration, total tests, or flakiness count.
+- **Direct Navigation**: One-click shortcuts to navigate directly to Detailed Reports, Comparisons, or active run monitors.
+- **Endpoint**: `GET /api/runs` (with filtering, search, and sorting parameters).
+
+---
+
+## 23. Getting Started (For Future Development)
 
 > *Notice: Application code and dependencies have not yet been installed. The instructions below outline the planned setup process for Phase 1.*
 

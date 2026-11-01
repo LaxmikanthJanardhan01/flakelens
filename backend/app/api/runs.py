@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List, Optional, Any
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -14,6 +14,7 @@ from backend.app.schemas.run import (
     TestIterationDetailResponse,
 )
 from backend.app.schemas.report import FlakinessReportResponse
+from backend.app.schemas.comparison import RunComparisonResponse
 from backend.app.core.lock import ExecutionLockManager
 from backend.app.core.runner import ExecutionRunner
 from backend.app.core.detector import FlakinessDetector, ActiveRunAnalysisError
@@ -41,9 +42,20 @@ def _build_run_response(run: TestRun, db: Session) -> TestRunResponse:
         )
         .count()
     )
+    proj = db.query(Project).filter(Project.id == run.project_id).first()
+    proj_name = proj.name if proj else None
+
+    duration_sec = None
+    if run.started_at and run.completed_at:
+        duration_sec = round((run.completed_at - run.started_at).total_seconds(), 2)
+
     return TestRunResponse(
         id=run.id,
         project_id=run.project_id,
+        project_name=proj_name,
+        run_type=run.run_type or "STANDARD",
+        baseline_run_id=run.baseline_run_id,
+        target_test_case_id=run.target_test_case_id,
         iteration_count=run.iteration_count,
         completed_iterations=completed_count,
         shuffle_order=run.shuffle_order,
@@ -53,17 +65,59 @@ def _build_run_response(run: TestRun, db: Session) -> TestRunResponse:
         consistently_failing_count=run.consistently_failing_count,
         flaky_tests_count=run.flaky_tests_count,
         insufficient_data_count=run.insufficient_data_count,
+        duration_seconds=duration_sec,
         started_at=run.started_at,
         completed_at=run.completed_at,
     )
 
 
 @router.get("", response_model=List[TestRunResponse])
-def list_runs(db: Session = Depends(get_db)):
+def list_runs(
+    project_id: Optional[str] = None,
+    status: Optional[str] = None,
+    run_type: Optional[str] = None,
+    search: Optional[str] = None,
+    sort_by: str = "started_at",
+    sort_order: str = "desc",
+    limit: int = 50,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+):
     """
-    List all test execution sessions with actual database progress.
+    List all test execution sessions with filtering, search, sorting, and database progress.
     """
-    runs = db.query(TestRun).order_by(TestRun.started_at.desc().nullslast(), TestRun.id.desc()).all()
+    query = db.query(TestRun).outerjoin(Project, TestRun.project_id == Project.id)
+
+    if project_id:
+        query = query.filter(TestRun.project_id == project_id)
+
+    if status:
+        query = query.filter(TestRun.status == status.upper())
+
+    if run_type:
+        query = query.filter(TestRun.run_type == run_type.upper())
+
+    if search:
+        s = f"%{search.strip()}%"
+        query = query.filter((Project.name.ilike(s)) | (TestRun.id.ilike(s)))
+
+    if sort_by == "duration":
+        order_col = (TestRun.completed_at - TestRun.started_at)
+    elif sort_by == "flaky_count":
+        order_col = TestRun.flaky_tests_count
+    elif sort_by == "total_tests":
+        order_col = TestRun.total_tests
+    elif sort_by == "completed_at":
+        order_col = TestRun.completed_at
+    else:
+        order_col = TestRun.started_at
+
+    if sort_order.lower() == "asc":
+        query = query.order_by(order_col.asc().nullslast(), TestRun.id.asc())
+    else:
+        query = query.order_by(order_col.desc().nullslast(), TestRun.id.desc())
+
+    runs = query.offset(offset).limit(limit).all()
     return [_build_run_response(r, db) for r in runs]
 
 
@@ -107,13 +161,44 @@ def start_run(
                    "FLAKELENS enforces strictly sequential execution to protect system resources and eliminate test cross-talk.",
         )
 
-    # 4. Create TestRun record
+    # 4. If target_test_case_id is provided, verify it exists and set total_tests=1
+    total_run_tests = test_count
+    if payload.target_test_case_id:
+        target_tc = db.query(TestCase).filter(
+            TestCase.id == payload.target_test_case_id,
+            TestCase.project_id == payload.project_id,
+        ).first()
+        if not target_tc:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Target test case '{payload.target_test_case_id}' not found in project '{project.name}'.",
+            )
+        total_run_tests = 1
+
+    # If baseline_run_id is provided, verify it exists and belongs to the same project
+    if payload.baseline_run_id:
+        baseline_run = db.query(TestRun).filter(TestRun.id == payload.baseline_run_id).first()
+        if not baseline_run:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Baseline test run '{payload.baseline_run_id}' not found.",
+            )
+        if baseline_run.project_id != payload.project_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Baseline test run must belong to the same project.",
+            )
+
+    # 5. Create TestRun record
     test_run = TestRun(
         project_id=payload.project_id,
         iteration_count=payload.iteration_count,
         shuffle_order=payload.shuffle_order,
+        run_type=payload.run_type or "STANDARD",
+        baseline_run_id=payload.baseline_run_id,
+        target_test_case_id=payload.target_test_case_id,
         status="PENDING",
-        total_tests=test_count,
+        total_tests=total_run_tests,
     )
     db.add(test_run)
     db.commit()
@@ -328,3 +413,24 @@ def trigger_run_rca(run_id: str, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Root cause analysis failed: {e}",
         )
+
+
+@router.get("/compare", response_model=RunComparisonResponse)
+def compare_runs_endpoint(
+    run_a_id: str,
+    run_b_id: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Alias endpoint for comparing two runs of the same project.
+    """
+    from backend.app.core.comparator import ExecutionComparator, ComparisonError
+    comparator = ExecutionComparator()
+    try:
+        return comparator.compare_runs(run_a_id=run_a_id, run_b_id=run_b_id, db=db)
+    except ComparisonError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        logger.exception(f"Error comparing runs: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Comparison failed: {e}")
+

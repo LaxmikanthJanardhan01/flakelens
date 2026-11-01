@@ -5,6 +5,7 @@ import {
   PlayCircle,
   FileBarChart2,
   GitCompare,
+  History,
 } from 'lucide-react';
 
 export type NavigationTab =
@@ -12,7 +13,8 @@ export type NavigationTab =
   | 'new-analysis'
   | 'active-run'
   | 'reports'
-  | 'diff-inspector';
+  | 'diff-inspector'
+  | 'history';
 
 interface SidebarProps {
   activeTab: NavigationTab;
@@ -28,6 +30,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
       description: 'System health & recent runs',
     },
     {
+      id: 'history' as NavigationTab,
+      label: 'Run History',
+      icon: History,
+      description: 'Project runs, filter & search',
+    },
+    {
       id: 'new-analysis' as NavigationTab,
       label: 'New Analysis',
       icon: UploadCloud,
@@ -41,15 +49,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
     },
     {
       id: 'reports' as NavigationTab,
-      label: 'Flakiness Reports',
+      label: 'Detailed Reports',
       icon: FileBarChart2,
-      description: 'Tri-bucket analysis & scores',
+      description: 'Per-test telemetry & RCA',
     },
     {
       id: 'diff-inspector' as NavigationTab,
-      label: 'Diff Inspector',
+      label: 'Comparisons & Diffs',
       icon: GitCompare,
-      description: 'Pass vs fail execution diffs',
+      description: 'Run vs run & iteration diffs',
     },
   ];
 
@@ -82,9 +90,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
       </div>
 
       <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-800 text-xs text-slate-400">
-        <div className="font-semibold text-slate-300 mb-1">Phase 1: Architecture</div>
+        <div className="font-semibold text-slate-300 mb-1">Phase 3: Analysis & Verification</div>
         <p className="text-[11px] text-slate-400">
-          Models, API contracts, and UI shell initialized. Docker execution scheduled for Phase 2.
+          Detailed telemetry reports, execution comparisons, and fix verification active.
         </p>
       </div>
     </aside>

@@ -9,6 +9,9 @@ class TestRunCreate(BaseModel):
     project_id: str
     iteration_count: int = Field(default=10, ge=3, le=50)
     shuffle_order: bool = Field(default=True)
+    run_type: str = Field(default="STANDARD")
+    baseline_run_id: Optional[str] = None
+    target_test_case_id: Optional[str] = None
 
 
 class TestIterationResponse(BaseModel):
@@ -76,6 +79,10 @@ class TestRunResponse(BaseModel):
 
     id: str
     project_id: str
+    project_name: Optional[str] = None
+    run_type: str = "STANDARD"
+    baseline_run_id: Optional[str] = None
+    target_test_case_id: Optional[str] = None
     iteration_count: int
     completed_iterations: int = 0
     shuffle_order: bool
@@ -85,6 +92,7 @@ class TestRunResponse(BaseModel):
     consistently_failing_count: int = 0
     flaky_tests_count: int = 0
     insufficient_data_count: int = 0
+    duration_seconds: Optional[float] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
 
