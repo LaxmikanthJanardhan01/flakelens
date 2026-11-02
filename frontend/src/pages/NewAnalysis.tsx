@@ -113,33 +113,36 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Configure New Analysis</h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Upload a Python project archive and configure repetitive execution parameters to uncover non-deterministic tests.
-        </p>
+    <div className="space-y-5 max-w-4xl mx-auto">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-[#E5E9E8]">
+        <div>
+          <h1 className="text-xl font-bold text-[#202A32] tracking-tight">Configure New Analysis</h1>
+          <p className="text-xs text-[#647084] mt-0.5">
+            Upload a Python project archive and configure repetitive execution parameters to uncover non-deterministic tests.
+          </p>
+        </div>
       </div>
 
       {errorMessage && (
-        <div className="p-3 bg-rose-950/60 border border-rose-800 rounded-lg text-xs text-rose-300 flex items-center space-x-2">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="p-3 bg-[#FDF2F2] border border-[#F7BEBE] rounded-md text-xs text-[#DC4B4B] flex items-center space-x-2">
+          <AlertCircle className="w-4 h-4 text-[#DC4B4B] shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Column: Form Settings */}
-        <div className="md:col-span-2 space-y-6">
+        <div className="md:col-span-2 space-y-5">
           {/* File Upload Box */}
-          <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl space-y-4">
-            <h2 className="text-base font-semibold text-white flex items-center space-x-2">
-              <FileArchive className="w-4 h-4 text-sky-400" />
+          <div className="p-5 bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg shadow-card space-y-4">
+            <h2 className="text-sm font-semibold text-[#202A32] flex items-center space-x-2">
+              <FileArchive className="w-4 h-4 text-[#0F766E]" />
               <span>Project Source Ingestion</span>
             </h2>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-[#647084] mb-1">
                 Project Name
               </label>
               <input
@@ -147,15 +150,15 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
                 placeholder="e.g. backend-api-suite"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#E5E9E8] rounded-md text-sm text-[#202A32] placeholder-[#8993A2] focus:outline-none focus:ring-1 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-[#647084] mb-1">
                 Upload Project Archive (.zip)
               </label>
-              <div className="border-2 border-dashed border-slate-700 hover:border-sky-500 rounded-xl p-6 text-center transition-colors cursor-pointer bg-slate-800/30">
+              <div className="border-2 border-dashed border-[#E5E9E8] hover:border-[#0F766E] rounded-lg p-6 text-center transition-colors cursor-pointer bg-[#F7F8FA]">
                 <input
                   type="file"
                   accept=".zip"
@@ -164,11 +167,11 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
                   id="project-file-input"
                 />
                 <label htmlFor="project-file-input" className="cursor-pointer">
-                  <UploadCloud className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                  <div className="text-sm font-medium text-slate-200">
+                  <UploadCloud className="w-10 h-10 text-[#8993A2] mx-auto mb-2" />
+                  <div className="text-sm font-medium text-[#202A32]">
                     {archiveFile ? archiveFile.name : 'Click to select project archive (.zip)'}
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-[#647084] mt-1">
                     Pytest project repository with tests/ or test_*.py
                   </p>
                 </label>
@@ -179,7 +182,7 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
               <button
                 onClick={handleUploadAndDiscover}
                 disabled={isUploading}
-                className="w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-500 disabled:bg-slate-800 text-white font-medium text-xs rounded-lg transition-colors flex items-center justify-center space-x-2"
+                className="w-full py-2.5 px-4 bg-[#0F766E] hover:bg-[#0D6860] disabled:bg-[#F1F5F5] disabled:text-[#8993A2] text-white font-medium text-xs rounded-md transition-colors flex items-center justify-center space-x-2 cursor-pointer"
               >
                 <Search className="w-4 h-4" />
                 <span>{isUploading ? 'Extracting & Discovering in Docker...' : 'Upload & Discover Tests'}</span>
@@ -187,9 +190,9 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
             )}
 
             {projectId && (
-              <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-lg flex items-center justify-between text-xs text-emerald-300">
+              <div className="p-3 bg-[#EBF8F2] border border-[#A7E7CB] rounded-md flex items-center justify-between text-xs text-[#159B67]">
                 <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#159B67] shrink-0" />
                   <span>Ingested successfully! Discovered {discoveredCount} test cases.</span>
                 </div>
               </div>
@@ -197,16 +200,16 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
           </div>
 
           {/* Execution Parameters */}
-          <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl space-y-4">
-            <h2 className="text-base font-semibold text-white flex items-center space-x-2">
-              <Sliders className="w-4 h-4 text-sky-400" />
+          <div className="p-5 bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg shadow-card space-y-4">
+            <h2 className="text-sm font-semibold text-[#202A32] flex items-center space-x-2">
+              <Sliders className="w-4 h-4 text-[#0F766E]" />
               <span>Repetition Parameters</span>
             </h2>
 
             <div>
-              <div className="flex justify-between items-center text-xs font-medium text-slate-300 mb-1">
+              <div className="flex justify-between items-center text-xs font-medium text-[#647084] mb-1">
                 <span>Repetition Count (N):</span>
-                <span className="font-mono text-sky-400 font-bold">{iterations} iterations</span>
+                <span className="font-mono text-[#0F766E] font-bold">{iterations} iterations</span>
               </div>
               <input
                 type="range"
@@ -214,9 +217,9 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
                 max="20"
                 value={iterations}
                 onChange={(e) => setIterations(Number(e.target.value))}
-                className="w-full accent-sky-500 h-2 bg-slate-700 rounded-lg cursor-pointer"
+                className="w-full accent-[#0F766E] h-2 bg-[#E5E9E8] rounded-lg cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+              <div className="flex justify-between text-[10px] text-[#8993A2] mt-1">
                 <span>3 (Fast triage)</span>
                 <span>5 (Standard)</span>
                 <span>10 (Recommended)</span>
@@ -230,25 +233,25 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
                   type="checkbox"
                   checked={shuffleOrder}
                   onChange={(e) => setShuffleOrder(e.target.checked)}
-                  className="mt-1 rounded bg-slate-800 border-slate-700 text-sky-600 focus:ring-0"
+                  className="mt-1 rounded border-[#E5E9E8] text-[#0F766E] focus:ring-0"
                 />
                 <div>
-                  <div className="text-sm font-medium text-slate-200">
+                  <div className="text-sm font-medium text-[#202A32]">
                     Randomize Test Execution Order
                   </div>
-                  <div className="text-xs text-slate-400">
-                    Enables deterministic random ordering via <code className="text-sky-300 font-mono">pytest-random-order</code> to uncover hidden state pollution.
+                  <div className="text-xs text-[#647084]">
+                    Enables deterministic random ordering via <code className="text-[#0F766E] font-mono">pytest-random-order</code> to uncover hidden state pollution.
                   </div>
                 </div>
               </label>
             </div>
 
             {projectId && (
-              <div className="pt-4 border-t border-slate-800">
+              <div className="pt-4 border-t border-[#E5E9E8]">
                 <button
                   onClick={handleStartRun}
                   disabled={isStarting || discoveredCount === 0}
-                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-emerald-950/40"
+                  className="w-full py-3 px-4 bg-[#0F766E] hover:bg-[#0D6860] disabled:bg-[#F1F5F5] disabled:text-[#8993A2] text-white font-bold text-sm rounded-md transition-colors flex items-center justify-center space-x-2 shadow-sm cursor-pointer"
                 >
                   <Play className="w-4 h-4" />
                   <span>{isStarting ? 'Initiating Isolated Execution...' : `Launch Analysis Run (${iterations} Iterations)`}</span>
@@ -259,13 +262,13 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
         </div>
 
         {/* Right Column: Discovery Preview */}
-        <div className="space-y-6">
-          <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl">
-            <h2 className="text-base font-semibold text-white flex items-center space-x-2 mb-2">
-              <Search className="w-4 h-4 text-sky-400" />
+        <div className="space-y-5">
+          <div className="p-5 bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg shadow-card">
+            <h2 className="text-sm font-semibold text-[#202A32] flex items-center space-x-2 mb-2">
+              <Search className="w-4 h-4 text-[#0F766E]" />
               <span>Test Discovery Preview</span>
             </h2>
-            <p className="text-xs text-slate-400 mb-4">
+            <p className="text-xs text-[#647084] mb-4">
               Discovered pytest functions running strictly inside Docker container.
             </p>
 
@@ -278,23 +281,23 @@ export const NewAnalysis: React.FC<NewAnalysisProps> = ({ onRunStarted }) => {
             ) : (
               <div className="space-y-2 max-h-[350px] overflow-y-auto">
                 {testsList.map((t) => (
-                  <div key={t.id} className="p-2.5 rounded-lg bg-slate-800/40 border border-slate-800 text-xs">
-                    <div className="font-medium text-slate-200 truncate">{t.test_name}</div>
-                    <div className="text-[11px] font-mono text-slate-400 truncate">{t.file_path}</div>
+                  <div key={t.id} className="p-2.5 rounded-md bg-[#F7F8FA] border border-[#E5E9E8] text-xs">
+                    <div className="font-medium text-[#202A32] truncate">{t.test_name}</div>
+                    <div className="text-[11px] font-mono text-[#647084] truncate">{t.file_path}</div>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-800/30 border border-slate-800 space-y-2 text-xs text-slate-400">
-            <div className="flex items-center space-x-1.5 font-semibold text-slate-300">
-              <Shield className="w-3.5 h-3.5 text-sky-400" />
+          <div className="p-4 rounded-lg bg-[#F0FDFA] border border-[#CCFBF1] space-y-2 text-xs text-[#647084]">
+            <div className="flex items-center space-x-1.5 font-semibold text-[#0F766E]">
+              <Shield className="w-3.5 h-3.5 text-[#0F766E]" />
               <span>Docker Sandbox Enforced</span>
             </div>
             <p className="text-[11px] leading-relaxed">
               Execution runs strictly inside isolated Docker containers with non-root UID 1000,
-              <code className="text-sky-300 font-mono">--network none</code>, and read-only project mounts.
+              <code className="text-[#0F766E] font-mono"> --network none</code>, and read-only project mounts.
             </p>
           </div>
         </div>

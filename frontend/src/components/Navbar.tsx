@@ -29,63 +29,63 @@ export const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40 px-6 flex items-center justify-between">
+    <header className="h-14 border-b border-[#E5E9E8] bg-[#FFFFFF] sticky top-0 z-40 px-6 flex items-center justify-between shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
       <div className="flex items-center space-x-3">
-        <div className="p-2 bg-sky-600/20 border border-sky-500/30 rounded-lg text-sky-400">
-          <Activity className="w-5 h-5" />
+        <div className="w-8 h-8 rounded-md bg-[#F0FDFA] border border-[#CCFBF1] flex items-center justify-center text-[#0F766E]">
+          <Activity className="w-4 h-4" />
         </div>
         <div>
           <div className="flex items-center space-x-2">
-            <span className="font-bold text-lg tracking-tight text-white">FLAKELENS</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
-              v0.1.0-alpha
+            <span className="font-semibold text-base tracking-tight text-[#202A32]">FLAKELENS</span>
+            <span className="text-[10px] font-medium tracking-wide px-1.5 py-0.5 rounded bg-[#F1F3F7] text-[#647084] border border-[#E5E9E8]">
+              v0.3.0
             </span>
           </div>
-          <p className="text-xs text-slate-400 hidden sm:block">
-            Flaky Test Detection & Root Cause Analysis
+          <p className="text-[11px] text-[#647084] hidden sm:block leading-tight">
+            Flaky Test Detection &amp; Root Cause Analysis
           </p>
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-3">
         {/* Live Backend Health Pill */}
-        <div className="flex items-center space-x-2 bg-slate-800/80 border border-slate-700/80 px-3 py-1.5 rounded-full text-xs">
+        <div className="flex items-center space-x-2 bg-[#FFFFFF] border border-[#E5E9E8] px-2.5 py-1 rounded-full text-xs shadow-sm">
           {loading ? (
             <>
-              <RefreshCw className="w-3.5 h-3.5 animate-spin text-slate-400" />
-              <span className="text-slate-400">Checking health...</span>
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#647084]" />
+              <span className="text-[#647084] text-[11px]">Checking health...</span>
             </>
           ) : health && health.status === 'healthy' ? (
             <>
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#159B67] opacity-60"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#159B67]"></span>
               </span>
-              <span className="text-emerald-400 font-medium">Backend Healthy</span>
-              <span className="text-slate-500 text-[10px]">({health.database})</span>
+              <span className="text-[#159B67] font-medium text-[11px]">Backend Healthy</span>
+              <span className="text-[#647084] text-[10px] tabular-nums">({health.database})</span>
             </>
           ) : (
             <>
-              <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
-              <span className="text-rose-400 font-medium">Disconnected</span>
-              {error && <span className="text-slate-500 text-[10px] hidden md:inline">({error})</span>}
+              <AlertCircle className="w-3.5 h-3.5 text-[#DC4B4B]" />
+              <span className="text-[#DC4B4B] font-medium text-[11px]">Disconnected</span>
+              {error && <span className="text-[#647084] text-[10px] hidden md:inline">({error})</span>}
             </>
           )}
           <button
             onClick={fetchHealth}
             title="Refresh Health"
-            className="text-slate-400 hover:text-slate-200 transition-colors ml-1"
+            className="text-[#647084] hover:text-[#202A32] transition-colors ml-0.5 p-0.5 cursor-pointer"
           >
             <RefreshCw className="w-3 h-3" />
           </button>
         </div>
 
-        <div className="hidden lg:flex items-center space-x-1 text-xs text-slate-400 bg-slate-800/50 px-2.5 py-1.5 rounded border border-slate-800">
-          <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
-          <span>Air-Gapped Sandbox: Phase 2 Ready</span>
+        {/* Sandbox indicator with bright teal accent */}
+        <div className="hidden lg:flex items-center space-x-1.5 text-xs text-[#647084] bg-[#F7F8FA] px-2.5 py-1 rounded-md border border-[#E5E9E8]">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#14B8A6]" />
+          <span className="text-[11px] font-medium">Air-Gapped Sandbox: Active</span>
         </div>
       </div>
     </header>
   );
 };
-

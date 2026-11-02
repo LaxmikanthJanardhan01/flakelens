@@ -58,7 +58,6 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
   const [isCancelling, setIsCancelling] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Fetch list of recent runs if no specific runId provided
   const fetchRuns = useCallback(async () => {
     try {
       const res = await fetch('/api/runs');
@@ -66,7 +65,6 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
         const data: TestRun[] = await res.json();
         setRunsList(data);
         if (!selectedRunId && data.length > 0) {
-          // Default to latest active or latest completed run
           const active = data.find((r) => r.status === 'RUNNING' || r.status === 'PENDING');
           setSelectedRunId(active ? active.id : data[0].id);
         }
@@ -76,7 +74,6 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
     }
   }, [selectedRunId]);
 
-  // Fetch details for the selected run
   const fetchRunDetails = useCallback(async (id: string) => {
     try {
       const [runRes, iterRes] = await Promise.all([
@@ -110,7 +107,6 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
 
     fetchRunDetails(selectedRunId);
 
-    // Poll every 1.5s if run is active
     const interval = setInterval(() => {
       if (runData?.status === 'RUNNING' || runData?.status === 'PENDING') {
         fetchRunDetails(selectedRunId);
@@ -140,31 +136,31 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
     switch (status) {
       case 'PASSED':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#EBF8F2] text-[#159B67] border border-[#A7E7CB]">
             <CheckCircle2 className="w-3 h-3 mr-1" /> PASSED
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-rose-950/80 text-rose-400 border border-rose-800/60">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FDF2F2] text-[#DC4B4B] border border-[#F7BEBE]">
             <XCircle className="w-3 h-3 mr-1" /> FAILED
           </span>
         );
       case 'TIMED_OUT':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-950/80 text-amber-400 border border-amber-800/60">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF8EC] text-[#D99A22] border border-[#FADDA8]">
             <Clock className="w-3 h-3 mr-1" /> TIMED OUT
           </span>
         );
       case 'NOT_EXECUTED':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#F1F3F7] text-[#647084] border border-[#E5E9E8]">
             NOT EXECUTED
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-sky-950/80 text-sky-400 border border-sky-800/60">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#F0FDFA] text-[#0F766E] border border-[#CCFBF1]">
             {status}
           </span>
         );
@@ -174,16 +170,16 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
   // If no runs exist at all
   if (!isLoading && runsList.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-[#E5E9E8]">
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Active Run Monitor</h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <h1 className="text-xl font-bold text-[#202A32] tracking-tight">Active Run Monitor</h1>
+            <p className="text-xs text-[#647084] mt-0.5">
               Real-time iteration progress, streaming execution logs, and live telemetry.
             </p>
           </div>
         </div>
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg p-6">
           <EmptyState
             icon={PlayCircle}
             title="No Active Test Run"
@@ -201,23 +197,23 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
     : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header and Run Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-[#E5E9E8]">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Active Run Monitor</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <h1 className="text-xl font-bold text-[#202A32] tracking-tight">Active Run Monitor</h1>
+          <p className="text-xs text-[#647084] mt-0.5">
             Real-time iteration progress, streaming execution logs, and live container telemetry.
           </p>
         </div>
 
         {runsList.length > 1 && (
           <div className="flex items-center space-x-2">
-            <span className="text-xs text-slate-400 font-medium">Session:</span>
+            <span className="text-xs text-[#647084] font-medium">Session:</span>
             <select
               value={selectedRunId || ''}
               onChange={(e) => setSelectedRunId(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-sky-500"
+              className="bg-[#FFFFFF] border border-[#E5E9E8] text-xs text-[#202A32] rounded-md px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#0F766E] focus:border-[#0F766E]"
             >
               {runsList.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -230,22 +226,22 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
       </div>
 
       {errorMsg && (
-        <div className="p-3 bg-rose-950/60 border border-rose-800 rounded-lg text-xs text-rose-300 flex items-center space-x-2">
-          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="p-3 bg-[#FDF2F2] border border-[#F7BEBE] rounded-md text-xs text-[#DC4B4B] flex items-center space-x-2">
+          <AlertTriangle className="w-4 h-4 text-[#DC4B4B] shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Progress Card */}
       {runData && (
-        <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl space-y-4">
+        <div className="p-5 bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg shadow-card space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center space-x-3">
-                <span className="text-xs font-mono text-slate-400">Run ID: {runData.id}</span>
+                <span className="text-xs font-mono text-[#647084]">Run ID: {runData.id}</span>
                 {getStatusBadge(runData.status)}
               </div>
-              <div className="text-sm font-semibold text-white">
+              <div className="text-sm font-semibold text-[#202A32]">
                 Progress: {runData.completed_iterations} of {runData.iteration_count} iterations completed ({progressPercent}%)
               </div>
             </div>
@@ -255,7 +251,7 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
                 <button
                   onClick={handleCancelRun}
                   disabled={isCancelling}
-                  className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 transition-colors"
+                  className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-semibold bg-[#FDF2F2] hover:bg-[#F7BEBE] text-[#DC4B4B] border border-[#F7BEBE] transition-colors cursor-pointer"
                 >
                   <StopCircle className="w-3.5 h-3.5 mr-1.5" />
                   {isCancelling ? 'Cancelling...' : 'Cancel Run'}
@@ -263,7 +259,7 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
               )}
               <button
                 onClick={() => selectedRunId && fetchRunDetails(selectedRunId)}
-                className="p-1.5 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700"
+                className="p-1.5 text-[#647084] hover:text-[#202A32] bg-[#FFFFFF] hover:bg-[#F7F8FA] rounded-md border border-[#E5E9E8] cursor-pointer"
                 title="Refresh Telemetry"
               >
                 <RefreshCw className="w-4 h-4" />
@@ -272,111 +268,111 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-[#E5E9E8] rounded-full h-2.5 overflow-hidden">
             <div
               className={`h-2.5 rounded-full transition-all duration-500 ${
                 runData.status === 'FAILED' || runData.status === 'TIMED_OUT'
-                  ? 'bg-amber-500'
+                  ? 'bg-[#D99A22]'
                   : runData.status === 'COMPLETED'
-                  ? 'bg-emerald-500'
-                  : 'bg-sky-500 animate-pulse'
+                  ? 'bg-[#159B67]'
+                  : 'bg-[#0F766E] animate-pulse'
               }`}
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
-            <div className="p-2.5 bg-slate-800/40 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Total Tests:</span>
-              <div className="text-sm font-semibold text-white mt-0.5">{runData.total_tests}</div>
+            <div className="p-2.5 bg-[#F7F8FA] rounded-md border border-[#E5E9E8]">
+              <span className="text-[#647084]">Total Tests:</span>
+              <div className="text-sm font-semibold text-[#202A32] mt-0.5">{runData.total_tests}</div>
             </div>
-            <div className="p-2.5 bg-slate-800/40 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Order Shuffling:</span>
-              <div className="text-sm font-semibold text-white mt-0.5">{runData.shuffle_order ? 'Enabled' : 'Disabled'}</div>
+            <div className="p-2.5 bg-[#F7F8FA] rounded-md border border-[#E5E9E8]">
+              <span className="text-[#647084]">Order Shuffling:</span>
+              <div className="text-sm font-semibold text-[#202A32] mt-0.5">{runData.shuffle_order ? 'Enabled' : 'Disabled'}</div>
             </div>
-            <div className="p-2.5 bg-slate-800/40 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Completed Iterations:</span>
-              <div className="text-sm font-semibold text-white mt-0.5">{runData.completed_iterations} / {runData.iteration_count}</div>
+            <div className="p-2.5 bg-[#F7F8FA] rounded-md border border-[#E5E9E8]">
+              <span className="text-[#647084]">Completed Iterations:</span>
+              <div className="text-sm font-semibold text-[#202A32] mt-0.5">{runData.completed_iterations} / {runData.iteration_count}</div>
             </div>
-            <div className="p-2.5 bg-slate-800/40 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Sandbox Isolation:</span>
-              <div className="text-sm font-semibold text-emerald-400 mt-0.5">Air-Gapped (--network none)</div>
+            <div className="p-2.5 bg-[#F7F8FA] rounded-md border border-[#E5E9E8]">
+              <span className="text-[#647084]">Sandbox Isolation:</span>
+              <div className="text-sm font-semibold text-[#159B67] mt-0.5">Air-Gapped (--network none)</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Test Execution Stream */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg overflow-hidden shadow-card">
+        <div className="px-5 py-3.5 border-b border-[#E5E9E8] flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Terminal className="w-4 h-4 text-sky-400" />
-            <h2 className="text-base font-semibold text-white">Live Execution Telemetry</h2>
+            <Terminal className="w-4 h-4 text-[#0F766E]" />
+            <h2 className="text-sm font-semibold text-[#202A32]">Live Execution Telemetry</h2>
           </div>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-[#647084]">
             {iterationsData.length} recorded test iteration outcomes
           </span>
         </div>
 
         {iterationsData.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-400">
+          <div className="p-8 text-center text-xs text-[#647084]">
             {runData?.status === 'PENDING'
               ? 'Starting Docker container and preparing runner environment...'
               : 'No test outcomes recorded yet for this session.'}
           </div>
         ) : (
-          <div className="divide-y divide-slate-800/60 max-h-[550px] overflow-y-auto">
+          <div className="divide-y divide-[#E5E9E8] max-h-[550px] overflow-y-auto">
             {iterationsData.map((item) => {
               const isExpanded = expandedRow === item.id;
               return (
-                <div key={item.id} className="hover:bg-slate-800/20 transition-colors">
+                <div key={item.id} className="hover:bg-[#F7F8FA] transition-colors">
                   <div
                     onClick={() => setExpandedRow(isExpanded ? null : item.id)}
-                    className="px-6 py-3 flex items-center justify-between cursor-pointer text-xs"
+                    className="px-5 py-3 flex items-center justify-between cursor-pointer text-xs"
                   >
                     <div className="flex items-center space-x-3 truncate pr-4">
-                      <button className="text-slate-500 hover:text-white">
+                      <button className="text-[#647084] hover:text-[#202A32]">
                         {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                       </button>
-                      <span className="font-mono text-slate-400 w-14 shrink-0">
+                      <span className="font-mono text-[#647084] w-14 shrink-0">
                         Iter #{item.iteration_number}
                       </span>
-                      <span className="font-medium text-slate-200 truncate font-mono">
+                      <span className="font-medium text-[#202A32] truncate font-mono">
                         {item.node_id}
                       </span>
                     </div>
 
                     <div className="flex items-center space-x-3 shrink-0">
-                      <span className="font-mono text-slate-400">{item.duration_ms}ms</span>
+                      <span className="font-mono text-[#647084]">{item.duration_ms}ms</span>
                       {getStatusBadge(item.status)}
                     </div>
                   </div>
 
                   {/* Expandable Traceback and Logs */}
                   {isExpanded && (
-                    <div className="px-6 pb-4 pt-1 bg-slate-950/60 border-t border-slate-800/40 space-y-2 text-xs">
+                    <div className="px-5 pb-4 pt-1 bg-[#F1F3F7] border-t border-[#E5E9E8] space-y-2 text-xs">
                       {item.random_order_seed && (
-                        <div className="text-[11px] text-slate-400 font-mono">
-                          Random-order seed: <span className="text-sky-300">{item.random_order_seed}</span> (Execution order: #{item.execution_order})
+                        <div className="text-[11px] text-[#647084] font-mono">
+                          Random-order seed: <span className="text-[#0F766E]">{item.random_order_seed}</span> (Execution order: #{item.execution_order})
                         </div>
                       )}
 
                       {item.error_message && (
-                        <div className="p-2.5 rounded bg-rose-950/30 border border-rose-900/40 text-rose-300 font-mono text-[11px] whitespace-pre-wrap">
+                        <pre className="p-3 rounded-md bg-[#FDF2F2] border border-[#F7BEBE] text-[#DC4B4B] font-mono text-[11px] overflow-x-auto whitespace-pre">
                           {item.error_message}
-                        </div>
+                        </pre>
                       )}
 
                       {item.traceback && (
-                        <div className="p-2.5 rounded bg-slate-900 border border-slate-800 text-slate-300 font-mono text-[11px] overflow-x-auto whitespace-pre">
+                        <pre className="p-3 rounded-md bg-[#F1F3F7] border border-[#E5E9E8] text-[#202A32] font-mono text-[11px] overflow-x-auto whitespace-pre">
                           {item.traceback}
-                        </div>
+                        </pre>
                       )}
 
                       {item.stdout && (
                         <div>
-                          <div className="text-[11px] text-slate-400 mb-1 font-semibold">Standard Output (stdout):</div>
-                          <pre className="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300 font-mono text-[11px] overflow-x-auto whitespace-pre">
+                          <div className="text-[11px] text-[#647084] mb-1 font-semibold">Standard Output (stdout):</div>
+                          <pre className="p-3 rounded-md bg-[#F1F3F7] border border-[#E5E9E8] text-[#202A32] font-mono text-[11px] overflow-x-auto whitespace-pre">
                             {item.stdout}
                           </pre>
                         </div>
@@ -384,8 +380,8 @@ export const ActiveRun: React.FC<ActiveRunProps> = ({ onNavigateToNew, runId }) 
 
                       {item.stderr && (
                         <div>
-                          <div className="text-[11px] text-slate-400 mb-1 font-semibold">Standard Error (stderr):</div>
-                          <pre className="p-2 rounded bg-slate-900 border border-slate-800 text-rose-300 font-mono text-[11px] overflow-x-auto whitespace-pre">
+                          <div className="text-[11px] text-[#647084] mb-1 font-semibold">Standard Error (stderr):</div>
+                          <pre className="p-3 rounded-md bg-[#FDF2F2] border border-[#F7BEBE] text-[#DC4B4B] font-mono text-[11px] overflow-x-auto whitespace-pre">
                             {item.stderr}
                           </pre>
                         </div>

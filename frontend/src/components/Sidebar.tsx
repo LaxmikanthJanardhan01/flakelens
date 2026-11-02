@@ -27,45 +27,39 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
       id: 'dashboard' as NavigationTab,
       label: 'Overview',
       icon: LayoutDashboard,
-      description: 'System health & recent runs',
     },
     {
       id: 'history' as NavigationTab,
       label: 'Run History',
       icon: History,
-      description: 'Project runs, filter & search',
     },
     {
       id: 'new-analysis' as NavigationTab,
       label: 'New Analysis',
       icon: UploadCloud,
-      description: 'Upload project & configure',
     },
     {
       id: 'active-run' as NavigationTab,
       label: 'Active Run',
       icon: PlayCircle,
-      description: 'Live execution monitor',
     },
     {
       id: 'reports' as NavigationTab,
       label: 'Detailed Reports',
       icon: FileBarChart2,
-      description: 'Per-test telemetry & RCA',
     },
     {
       id: 'diff-inspector' as NavigationTab,
       label: 'Comparisons & Diffs',
       icon: GitCompare,
-      description: 'Run vs run & iteration diffs',
     },
   ];
 
   return (
-    <aside className="w-64 border-r border-slate-800 bg-slate-900/60 p-4 flex flex-col justify-between shrink-0">
+    <aside className="w-56 border-r border-[#E5E9E8] bg-[#FFFFFF] p-3 flex flex-col justify-between shrink-0 shadow-[1px_0_2px_rgba(0,0,0,0.01)]">
       <div className="space-y-1">
-        <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-          Navigation
+        <div className="px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#647084]">
+          Workspace
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -74,28 +68,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
             <button
               key={item.id}
               onClick={() => onSelectTab(item.id)}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              className={`w-full flex items-center space-x-2.5 px-2.5 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-sky-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-[#F0FDFA] text-[#0F766E] border border-[#CCFBF1] font-semibold shadow-xs'
+                  : 'text-[#647084] hover:text-[#202A32] hover:bg-[#F7F8FA] border border-transparent'
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-              <div className="text-left">
-                <div>{item.label}</div>
-              </div>
+              <Icon className={`w-4 h-4 ${isActive ? 'text-[#0F766E]' : 'text-[#647084]'}`} />
+              <span className="truncate">{item.label}</span>
             </button>
           );
         })}
       </div>
 
-      <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-800 text-xs text-slate-400">
-        <div className="font-semibold text-slate-300 mb-1">Phase 3: Analysis & Verification</div>
-        <p className="text-[11px] text-slate-400">
-          Detailed telemetry reports, execution comparisons, and fix verification active.
+      <div className="p-3 bg-[#F7F8FA] rounded-md border border-[#E5E9E8] text-xs">
+        <div className="font-semibold text-[#202A32] text-[11px] mb-0.5">Phase 3: Analysis Engine</div>
+        <p className="text-[11px] text-[#647084] leading-relaxed">
+          Automated flakiness scoring, root cause analysis, run diffing, and fix verification.
         </p>
       </div>
     </aside>
   );
 };
-

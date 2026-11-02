@@ -86,7 +86,6 @@ export const ReportView: React.FC<ReportViewProps> = ({
       const data = await reportsApi.getDetailed(runId);
       setReports(data.reports || []);
     } catch {
-      // Fallback to basic reports if detailed endpoint is unavailable
       try {
         const basicData = await reportsApi.getByRun(runId);
         setReports(
@@ -163,21 +162,21 @@ export const ReportView: React.FC<ReportViewProps> = ({
     switch (classification) {
       case 'CONSISTENTLY_PASSING':
         return (
-          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#EBF8F2] text-[#159B67] border border-[#A7E7CB]">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Consistently Passing</span>
           </span>
         );
       case 'CONSISTENTLY_FAILING':
         return (
-          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FDF2F2] text-[#DC4B4B] border border-[#F7BEBE]">
             <XCircle className="w-3.5 h-3.5" />
             <span>Consistently Failing</span>
           </span>
         );
       case 'FLAKY':
         return (
-          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FEF8EC] text-[#D99A22] border border-[#FADDA8]">
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>Flaky</span>
           </span>
@@ -185,7 +184,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
       case 'INSUFFICIENT_DATA':
       default:
         return (
-          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20">
+          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#F1F3F7] text-[#647084] border border-[#E5E9E8]">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Insufficient Data</span>
           </span>
@@ -196,7 +195,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
   const getRCACategoryBadge = (category?: string | null) => {
     if (!category) {
       return (
-        <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+        <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-medium bg-[#EBF8F2] text-[#159B67] border border-[#A7E7CB]">
           <CheckCircle2 className="w-3.5 h-3.5" />
           <span>Stable / Deterministic Pass</span>
         </span>
@@ -206,49 +205,49 @@ export const ReportView: React.FC<ReportViewProps> = ({
     switch (category) {
       case 'ORDER_DEPENDENCY':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/30">
+          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FEF8EC] text-[#D99A22] border border-[#FADDA8]">
             <GitBranch className="w-3.5 h-3.5" />
             <span>Order Dependency</span>
           </span>
         );
       case 'SHARED_STATE_POLLUTION':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
+          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FEF8EC] text-[#D99A22] border border-[#FADDA8]">
             <Info className="w-3.5 h-3.5" />
             <span>Shared State Pollution</span>
           </span>
         );
       case 'TIMING_OR_RACE_CONDITION':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FEF8EC] text-[#D99A22] border border-[#FADDA8]">
             <Clock className="w-3.5 h-3.5" />
             <span>Timing / Race Condition</span>
           </span>
         );
       case 'RESOURCE_EXHAUSTION':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/30">
+          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FDF2F2] text-[#DC4B4B] border border-[#F7BEBE]">
             <Cpu className="w-3.5 h-3.5" />
             <span>Resource Exhaustion</span>
           </span>
         );
       case 'ENVIRONMENT_DEPENDENCY':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#F0FDFA] text-[#0F766E] border border-[#CCFBF1]">
             <Terminal className="w-3.5 h-3.5" />
             <span>Environment Dependency</span>
           </span>
         );
       case 'EXTERNAL_DEPENDENCY':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/30">
+          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FEF8EC] text-[#D99A22] border border-[#FADDA8]">
             <Globe className="w-3.5 h-3.5" />
             <span>External Dependency</span>
           </span>
         );
       case 'ASSERTION_OR_LOGIC_FAILURE':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FDF2F2] text-[#DC4B4B] border border-[#F7BEBE]">
             <Bug className="w-3.5 h-3.5" />
             <span>Assertion / Logic Failure</span>
           </span>
@@ -256,7 +255,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
       case 'UNKNOWN':
       default:
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700">
+          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#F1F3F7] text-[#647084] border border-[#E5E9E8]">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Unknown / Inconclusive</span>
           </span>
@@ -271,15 +270,12 @@ export const ReportView: React.FC<ReportViewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header with Run Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-[#E5E9E8]">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center space-x-2">
-            <FileBarChart2 className="w-6 h-6 text-sky-400" />
-            <span>Detailed Flakiness & RCA Reports</span>
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <h1 className="text-xl font-bold text-[#202A32] tracking-tight">Detailed Flakiness &amp; RCA Reports</h1>
+          <p className="text-xs text-[#647084] mt-0.5">
             Comprehensive per-test execution telemetry, multi-iteration logs, and evidence-based root cause analysis.
           </p>
         </div>
@@ -289,7 +285,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
             <select
               value={selectedRunId}
               onChange={(e) => setSelectedRunId(e.target.value)}
-              className="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-sky-500 focus:outline-none"
+              className="bg-[#FFFFFF] border border-[#E5E9E8] text-[#202A32] text-xs rounded-md px-3 py-2 focus:ring-1 focus:ring-[#0F766E] focus:border-[#0F766E] focus:outline-none"
             >
               {runs.map((r, idx) => (
                 <option key={r.id} value={r.id}>
@@ -302,7 +298,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
             <button
               onClick={handleAnalyze}
               disabled={analyzing || selectedRun?.status === 'RUNNING'}
-              className="inline-flex items-center space-x-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 rounded-lg text-xs font-medium transition-colors border border-slate-700"
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#FFFFFF] hover:bg-[#F7F8FA] disabled:opacity-50 text-[#202A32] rounded-md text-xs font-medium transition-colors border border-[#E5E9E8] cursor-pointer"
               title={
                 selectedRun?.status === 'RUNNING'
                   ? 'Cannot analyze while run is running'
@@ -316,14 +312,14 @@ export const ReportView: React.FC<ReportViewProps> = ({
         )}
       </div>
 
-      {/* Tri-Bucket Taxonomy Filter Tabs */}
+      {/* Filter Tabs */}
       <div className="flex flex-wrap gap-2 pb-2">
         <button
           onClick={() => setFilter('ALL')}
-          className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
             filter === 'ALL'
-              ? 'bg-sky-600 text-white'
-              : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'
+              ? 'bg-[#0F766E] text-white'
+              : 'bg-[#F7F8FA] text-[#647084] hover:bg-[#F1F5F5] border border-[#E5E9E8]'
           }`}
         >
           <Filter className="w-3.5 h-3.5" />
@@ -332,10 +328,10 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
         <button
           onClick={() => setFilter('FLAKY')}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
             filter === 'FLAKY'
-              ? 'bg-amber-600 text-white'
-              : 'bg-slate-800/60 text-amber-400 hover:bg-slate-800'
+              ? 'bg-[#D99A22] text-white'
+              : 'bg-[#FEF8EC] text-[#D99A22] hover:bg-[#FADDA8] border border-[#FADDA8]'
           }`}
         >
           <AlertTriangle className="w-3.5 h-3.5" />
@@ -346,10 +342,10 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
         <button
           onClick={() => setFilter('FAILING')}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
             filter === 'FAILING'
-              ? 'bg-rose-600 text-white'
-              : 'bg-slate-800/60 text-rose-400 hover:bg-slate-800'
+              ? 'bg-[#DC4B4B] text-white'
+              : 'bg-[#FDF2F2] text-[#DC4B4B] hover:bg-[#F7BEBE] border border-[#F7BEBE]'
           }`}
         >
           <XCircle className="w-3.5 h-3.5" />
@@ -361,10 +357,10 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
         <button
           onClick={() => setFilter('PASSING')}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
             filter === 'PASSING'
-              ? 'bg-emerald-600 text-white'
-              : 'bg-slate-800/60 text-emerald-400 hover:bg-slate-800'
+              ? 'bg-[#159B67] text-white'
+              : 'bg-[#EBF8F2] text-[#159B67] hover:bg-[#A7E7CB] border border-[#A7E7CB]'
           }`}
         >
           <CheckCircle2 className="w-3.5 h-3.5" />
@@ -376,10 +372,10 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
         <button
           onClick={() => setFilter('INSUFFICIENT_DATA')}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
             filter === 'INSUFFICIENT_DATA'
-              ? 'bg-slate-600 text-white'
-              : 'bg-slate-800/60 text-slate-400 hover:bg-slate-800'
+              ? 'bg-[#647084] text-white'
+              : 'bg-[#F1F3F7] text-[#647084] hover:bg-[#E5E9E8] border border-[#E5E9E8]'
           }`}
         >
           <HelpCircle className="w-3.5 h-3.5" />
@@ -392,12 +388,12 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
       {/* Reports Content Area */}
       {loading ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-12 text-center text-slate-400 text-sm">
-          <Activity className="w-6 h-6 animate-spin mx-auto mb-2 text-sky-400" />
+        <div className="bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg p-12 text-center text-[#647084] text-sm">
+          <Activity className="w-6 h-6 animate-spin mx-auto mb-2 text-[#0F766E]" />
           Loading detailed reports and per-test execution telemetry...
         </div>
       ) : runs.length === 0 || reports.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg p-6">
           <EmptyState
             icon={FileBarChart2}
             title="No Flakiness Reports Available"
@@ -407,8 +403,8 @@ export const ReportView: React.FC<ReportViewProps> = ({
           />
         </div>
       ) : filteredReports.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-400 text-sm">
-          No test reports match the selected filter <span className="font-semibold text-slate-300">"{filter}"</span>.
+        <div className="bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg p-8 text-center text-[#647084] text-sm">
+          No test reports match the selected filter <span className="font-semibold text-[#202A32]">"{filter}"</span>.
         </div>
       ) : (
         <div className="space-y-4">
@@ -422,16 +418,16 @@ export const ReportView: React.FC<ReportViewProps> = ({
             return (
               <div
                 key={report.id}
-                className="p-5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors space-y-4"
+                className="p-5 rounded-lg bg-[#FFFFFF] border border-[#E5E9E8] hover:border-[#CBD5E1] transition-colors space-y-4 shadow-card"
               >
-                {/* Top Header: Node ID, Outcome Classification & Verify Fix Button */}
+                {/* Top Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="space-y-1">
-                    <div className="font-mono text-sm font-semibold text-white break-all">
+                    <div className="font-mono text-sm font-semibold text-[#202A32] break-all">
                       {report.node_id || report.test_name || `Test Case #${report.test_case_id.slice(0, 8)}`}
                     </div>
                     {report.file_path && (
-                      <div className="text-xs text-slate-400 font-mono">{report.file_path}</div>
+                      <div className="text-xs text-[#647084] font-mono">{report.file_path}</div>
                     )}
                   </div>
                   <div className="flex items-center space-x-2">
@@ -439,7 +435,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
                     {isFlakyOrFailing && (
                       <button
                         onClick={() => setVerifyModalTest(report)}
-                        className="inline-flex items-center space-x-1.5 px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded-md text-xs font-medium transition-colors shadow-sm"
+                        className="inline-flex items-center space-x-1.5 px-3 py-1 bg-[#0F766E] hover:bg-[#0D6860] text-white rounded-md text-xs font-medium transition-colors shadow-sm cursor-pointer"
                       >
                         <ShieldCheck className="w-3.5 h-3.5" />
                         <span>Verify Fix</span>
@@ -450,56 +446,56 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
                 {/* Metric Chips */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-2.5">
-                    <div className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
+                  <div className="bg-[#F7F8FA] border border-[#E5E9E8] rounded-md p-2.5">
+                    <div className="text-[11px] uppercase tracking-wider text-[#647084] font-medium">
                       Valid Executions
                     </div>
-                    <div className="text-sm font-semibold text-slate-200 mt-0.5">
+                    <div className="text-sm font-semibold text-[#202A32] mt-0.5">
                       {report.total_runs} runs
                     </div>
                   </div>
 
-                  <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-2.5">
-                    <div className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
+                  <div className="bg-[#F7F8FA] border border-[#E5E9E8] rounded-md p-2.5">
+                    <div className="text-[11px] uppercase tracking-wider text-[#647084] font-medium">
                       Pass / Fail Count
                     </div>
-                    <div className="text-sm font-semibold text-slate-200 mt-0.5">
-                      <span className="text-emerald-400">{report.pass_count}P</span>
+                    <div className="text-sm font-semibold text-[#202A32] mt-0.5">
+                      <span className="text-[#159B67]">{report.pass_count}P</span>
                       {' / '}
-                      <span className="text-rose-400">{report.fail_count}F</span>
+                      <span className="text-[#DC4B4B]">{report.fail_count}F</span>
                     </div>
                   </div>
 
-                  <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-2.5">
-                    <div className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
+                  <div className="bg-[#F7F8FA] border border-[#E5E9E8] rounded-md p-2.5">
+                    <div className="text-[11px] uppercase tracking-wider text-[#647084] font-medium">
                       Flakiness Score (F)
                     </div>
-                    <div className="text-sm font-semibold text-slate-200 mt-0.5">
+                    <div className="text-sm font-semibold text-[#202A32] mt-0.5">
                       {report.outcome_classification === 'INSUFFICIENT_DATA'
                         ? 'N/A'
                         : `${(report.flakiness_score * 100).toFixed(1)}% (F = ${report.flakiness_score.toFixed(4)})`}
                     </div>
                   </div>
 
-                  <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-2.5">
-                    <div className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
+                  <div className="bg-[#F7F8FA] border border-[#E5E9E8] rounded-md p-2.5">
+                    <div className="text-[11px] uppercase tracking-wider text-[#647084] font-medium">
                       Flip Count (κ)
                     </div>
-                    <div className="text-sm font-semibold text-slate-200 mt-0.5">
+                    <div className="text-sm font-semibold text-[#202A32] mt-0.5">
                       {report.flip_count} transitions
                     </div>
                   </div>
                 </div>
 
-                {/* Per-Test Execution History / Iteration Breakdown */}
+                {/* Per-Test Iteration History */}
                 {report.iterations && report.iterations.length > 0 && (
-                  <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg space-y-2">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span className="font-semibold uppercase tracking-wider text-slate-300">
+                  <div className="p-3 bg-[#F7F8FA] border border-[#E5E9E8] rounded-md space-y-2">
+                    <div className="flex items-center justify-between text-xs text-[#647084]">
+                      <span className="font-semibold uppercase tracking-wider text-[#202A32]">
                         Execution Timeline ({report.iterations.length} iterations)
                       </span>
-                      <span className="text-[11px] text-slate-500">
-                        Click any iteration to inspect console logs & traceback
+                      <span className="text-[11px] text-[#8993A2]">
+                        Click any iteration to inspect console logs &amp; traceback
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
@@ -507,12 +503,12 @@ export const ReportView: React.FC<ReportViewProps> = ({
                         <button
                           key={it.iteration_number}
                           onClick={() => setSelectedIteration({ test: report, iteration: it })}
-                          className={`px-2 py-1 rounded text-[11px] font-mono border transition-all flex items-center space-x-1 ${
+                          className={`px-2 py-1 rounded text-[11px] font-mono border transition-all flex items-center space-x-1 cursor-pointer ${
                             it.status === 'PASSED'
-                              ? 'bg-emerald-950/40 border-emerald-800/60 text-emerald-300 hover:bg-emerald-900/60'
+                              ? 'bg-[#EBF8F2] border-[#A7E7CB] text-[#159B67] hover:bg-[#A7E7CB]'
                               : it.status === 'TIMED_OUT'
-                              ? 'bg-red-950/40 border-red-800/60 text-red-300 hover:bg-red-900/60'
-                              : 'bg-rose-950/40 border-rose-800/60 text-rose-300 hover:bg-rose-900/60'
+                              ? 'bg-[#FEF8EC] border-[#FADDA8] text-[#D99A22] hover:bg-[#FADDA8]'
+                              : 'bg-[#FDF2F2] border-[#F7BEBE] text-[#DC4B4B] hover:bg-[#F7BEBE]'
                           }`}
                         >
                           <span className="font-bold">#{it.iteration_number}</span>
@@ -528,54 +524,54 @@ export const ReportView: React.FC<ReportViewProps> = ({
                   </div>
                 )}
 
-                {/* Root Cause Analysis (RCA) Section */}
-                <div className="mt-3 pt-3 border-t border-slate-800/80 space-y-3">
+                {/* Root Cause Analysis Section */}
+                <div className="mt-3 pt-3 border-t border-[#E5E9E8] space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-[#202A32]">
                         Root Cause Diagnosis:
                       </span>
                       {getRCACategoryBadge(report.root_cause_category)}
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs text-slate-400">Evidence Confidence:</span>
+                      <span className="text-xs text-[#647084]">Evidence Confidence:</span>
                       {report.root_cause_category ? (
-                        <div className="flex items-center space-x-1.5 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-700/60 text-xs font-medium text-slate-200">
+                        <div className="flex items-center space-x-1.5 bg-[#F7F8FA] px-2 py-0.5 rounded border border-[#E5E9E8] text-xs font-medium text-[#202A32]">
                           <div
                             className={`w-2 h-2 rounded-full ${
                               (report.confidence_score ?? 0) >= 0.7
-                                ? 'bg-emerald-400'
+                                ? 'bg-[#159B67]'
                                 : (report.confidence_score ?? 0) >= 0.4
-                                ? 'bg-amber-400'
-                                : 'bg-slate-400'
+                                ? 'bg-[#D99A22]'
+                                : 'bg-[#8993A2]'
                             }`}
                           />
                           <span>{((report.confidence_score ?? 0) * 100).toFixed(0)}%</span>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-500 font-mono">
+                        <span className="text-xs text-[#8993A2] font-mono">
                           N/A (Deterministic Pass)
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* RCA Structured Summary */}
+                  {/* RCA Summary */}
                   {report.rca_summary && (
-                    <div className="p-3.5 bg-slate-950/60 border border-slate-800 rounded-lg text-xs text-slate-300 font-mono whitespace-pre-line leading-relaxed">
+                    <pre className="p-3 rounded-md bg-[#F1F3F7] border border-[#E5E9E8] text-[#202A32] font-mono text-[11px] overflow-x-auto whitespace-pre leading-relaxed">
                       {report.rca_summary}
-                    </div>
+                    </pre>
                   )}
 
                   {/* Actionable Recommendations */}
                   {report.recommendations && (
-                    <div className="p-3 bg-sky-950/20 border border-sky-800/30 rounded-lg text-xs text-sky-200 space-y-1">
-                      <div className="flex items-center space-x-1.5 font-semibold text-sky-400">
+                    <div className="p-3 bg-[#F0FDFA] border border-[#CCFBF1] rounded-md text-xs text-[#202A32] space-y-1">
+                      <div className="flex items-center space-x-1.5 font-semibold text-[#0F766E]">
                         <Wrench className="w-3.5 h-3.5" />
                         <span>Actionable Recommendations</span>
                       </div>
-                      <p className="whitespace-pre-line text-slate-300 font-sans leading-relaxed">
+                      <p className="whitespace-pre-line text-[#647084] font-sans leading-relaxed">
                         {report.recommendations}
                       </p>
                     </div>
@@ -583,8 +579,8 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
                   {/* Suspected Preceding Tests */}
                   {suspects.length > 0 && (
-                    <div className="p-3 bg-purple-950/20 border border-purple-800/30 rounded-lg text-xs space-y-1.5">
-                      <div className="flex items-center space-x-1.5 font-semibold text-purple-300">
+                    <div className="p-3 bg-[#F0FDFA] border border-[#CCFBF1] rounded-md text-xs space-y-1.5">
+                      <div className="flex items-center space-x-1.5 font-semibold text-[#0F766E]">
                         <GitBranch className="w-3.5 h-3.5" />
                         <span>
                           Suspected Preceding Tests (Permutation Correlation) ({suspects.length})
@@ -594,10 +590,10 @@ export const ReportView: React.FC<ReportViewProps> = ({
                         {suspects.map((s: any, sIdx: number) => (
                           <div
                             key={sIdx}
-                            className="flex flex-col sm:flex-row sm:items-center justify-between text-slate-300 font-mono text-[11px] bg-slate-900/60 p-1.5 rounded border border-purple-900/40"
+                            className="flex flex-col sm:flex-row sm:items-center justify-between text-[#202A32] font-mono text-[11px] bg-[#FFFFFF] p-1.5 rounded border border-[#CCFBF1]"
                           >
-                            <span className="text-purple-200 truncate">{s.node_id}</span>
-                            <span className="text-slate-400">
+                            <span className="text-[#0F766E] truncate">{s.node_id}</span>
+                            <span className="text-[#647084]">
                               Preceded {s.preceded_in_failures}/{report.fail_count} failures (
                               {s.preceded_in_passes} passes) • Correlation:{' '}
                               {(s.correlation_score * 100).toFixed(0)}% • Candidate Polluter
@@ -616,51 +612,51 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
       {/* MODAL 1: Iteration Log Inspector */}
       {selectedIteration && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg max-w-3xl w-full max-h-[85vh] flex flex-col shadow-modal">
             {/* Modal Header */}
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+            <div className="p-4 border-b border-[#E5E9E8] flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-white text-sm flex items-center space-x-2">
-                  <Terminal className="w-4 h-4 text-sky-400" />
+                <h3 className="font-semibold text-[#202A32] text-sm flex items-center space-x-2">
+                  <Terminal className="w-4 h-4 text-[#0F766E]" />
                   <span>
                     Iteration #{selectedIteration.iteration.iteration_number} Telemetry Details
                   </span>
                   <span
                     className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                       selectedIteration.iteration.status === 'PASSED'
-                        ? 'bg-emerald-500/20 text-emerald-400'
-                        : 'bg-rose-500/20 text-rose-400'
+                        ? 'bg-[#EBF8F2] text-[#159B67] border border-[#A7E7CB]'
+                        : 'bg-[#FDF2F2] text-[#DC4B4B] border border-[#F7BEBE]'
                     }`}
                   >
                     {selectedIteration.iteration.status}
                   </span>
                 </h3>
-                <p className="text-xs text-slate-400 font-mono mt-0.5 truncate max-w-xl">
+                <p className="text-xs text-[#647084] font-mono mt-0.5 truncate max-w-xl">
                   {selectedIteration.test.node_id}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedIteration(null)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                className="p-1 text-[#647084] hover:text-[#202A32] rounded-md hover:bg-[#F7F8FA] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Body: Metadata Chips & Logs */}
+            {/* Modal Body */}
             <div className="p-4 space-y-4 overflow-y-auto flex-1 font-mono text-xs">
-              <div className="grid grid-cols-3 gap-2 text-slate-300">
-                <div className="p-2 bg-slate-800/50 rounded border border-slate-700/60">
-                  <span className="text-slate-400 text-[10px] block uppercase">Duration</span>
+              <div className="grid grid-cols-3 gap-2 text-[#202A32]">
+                <div className="p-2 bg-[#F7F8FA] rounded border border-[#E5E9E8]">
+                  <span className="text-[#647084] text-[10px] block uppercase">Duration</span>
                   <span className="font-bold">{selectedIteration.iteration.duration_ms.toFixed(1)} ms</span>
                 </div>
-                <div className="p-2 bg-slate-800/50 rounded border border-slate-700/60">
-                  <span className="text-slate-400 text-[10px] block uppercase">Execution Order</span>
+                <div className="p-2 bg-[#F7F8FA] rounded border border-[#E5E9E8]">
+                  <span className="text-[#647084] text-[10px] block uppercase">Execution Order</span>
                   <span className="font-bold">Position #{selectedIteration.iteration.execution_order}</span>
                 </div>
-                <div className="p-2 bg-slate-800/50 rounded border border-slate-700/60">
-                  <span className="text-slate-400 text-[10px] block uppercase">Random Seed</span>
+                <div className="p-2 bg-[#F7F8FA] rounded border border-[#E5E9E8]">
+                  <span className="text-[#647084] text-[10px] block uppercase">Random Seed</span>
                   <span className="font-bold">{selectedIteration.iteration.random_order_seed ?? 'None'}</span>
                 </div>
               </div>
@@ -668,10 +664,10 @@ export const ReportView: React.FC<ReportViewProps> = ({
               {/* Error Message */}
               {selectedIteration.iteration.error_message && (
                 <div className="space-y-1">
-                  <div className="text-rose-400 font-semibold flex items-center justify-between">
+                  <div className="text-[#DC4B4B] font-semibold flex items-center justify-between">
                     <span>Error Message</span>
                   </div>
-                  <pre className="p-3 bg-rose-950/30 border border-rose-900/40 rounded text-rose-300 whitespace-pre-wrap break-all">
+                  <pre className="p-3 rounded-md bg-[#FDF2F2] border border-[#F7BEBE] text-[#DC4B4B] font-mono text-[11px] overflow-x-auto whitespace-pre">
                     {selectedIteration.iteration.error_message}
                   </pre>
                 </div>
@@ -680,17 +676,17 @@ export const ReportView: React.FC<ReportViewProps> = ({
               {/* Traceback */}
               {selectedIteration.iteration.traceback && (
                 <div className="space-y-1">
-                  <div className="text-slate-300 font-semibold flex items-center justify-between">
+                  <div className="text-[#202A32] font-semibold flex items-center justify-between">
                     <span>Failure Traceback</span>
                     <button
                       onClick={() => copyToClipboard(selectedIteration.iteration.traceback || '')}
-                      className="text-[11px] text-slate-400 hover:text-white flex items-center space-x-1"
+                      className="text-[11px] text-[#647084] hover:text-[#202A32] flex items-center space-x-1 cursor-pointer"
                     >
-                      {copiedLog ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                      {copiedLog ? <Check className="w-3 h-3 text-[#159B67]" /> : <Copy className="w-3 h-3" />}
                       <span>{copiedLog ? 'Copied' : 'Copy'}</span>
                     </button>
                   </div>
-                  <pre className="p-3 bg-slate-950 border border-slate-800 rounded text-slate-300 whitespace-pre-wrap break-all max-h-60 overflow-y-auto">
+                  <pre className="p-3 rounded-md bg-[#F1F3F7] border border-[#E5E9E8] text-[#202A32] font-mono text-[11px] overflow-x-auto whitespace-pre max-h-60 overflow-y-auto">
                     {selectedIteration.iteration.traceback}
                   </pre>
                 </div>
@@ -699,8 +695,8 @@ export const ReportView: React.FC<ReportViewProps> = ({
               {/* Stdout */}
               {selectedIteration.iteration.stdout && (
                 <div className="space-y-1">
-                  <div className="text-slate-300 font-semibold">Standard Output (stdout)</div>
-                  <pre className="p-3 bg-slate-950 border border-slate-800 rounded text-slate-400 whitespace-pre-wrap break-all max-h-40 overflow-y-auto">
+                  <div className="text-[#202A32] font-semibold">Standard Output (stdout)</div>
+                  <pre className="p-3 rounded-md bg-[#F1F3F7] border border-[#E5E9E8] text-[#202A32] font-mono text-[11px] overflow-x-auto whitespace-pre max-h-40 overflow-y-auto">
                     {selectedIteration.iteration.stdout}
                   </pre>
                 </div>
@@ -709,18 +705,18 @@ export const ReportView: React.FC<ReportViewProps> = ({
               {/* Stderr */}
               {selectedIteration.iteration.stderr && (
                 <div className="space-y-1">
-                  <div className="text-slate-300 font-semibold">Standard Error (stderr)</div>
-                  <pre className="p-3 bg-slate-950 border border-slate-800 rounded text-amber-300/80 whitespace-pre-wrap break-all max-h-40 overflow-y-auto">
+                  <div className="text-[#202A32] font-semibold">Standard Error (stderr)</div>
+                  <pre className="p-3 rounded-md bg-[#FDF2F2] border border-[#F7BEBE] text-[#DC4B4B] font-mono text-[11px] overflow-x-auto whitespace-pre max-h-40 overflow-y-auto">
                     {selectedIteration.iteration.stderr}
                   </pre>
                 </div>
               )}
             </div>
 
-            <div className="p-3 border-t border-slate-800 flex justify-end">
+            <div className="p-3 border-t border-[#E5E9E8] flex justify-end">
               <button
                 onClick={() => setSelectedIteration(null)}
-                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium"
+                className="px-4 py-1.5 bg-[#FFFFFF] hover:bg-[#F7F8FA] text-[#202A32] border border-[#E5E9E8] rounded-md text-xs font-medium cursor-pointer"
               >
                 Close
               </button>
@@ -731,42 +727,42 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
       {/* MODAL 2: Fix Verification Launcher */}
       {verifyModalTest && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#FFFFFF] border border-[#E5E9E8] rounded-lg max-w-lg w-full p-6 space-y-5 shadow-modal">
+            <div className="flex items-center justify-between border-b border-[#E5E9E8] pb-3">
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-5 h-5 text-purple-400" />
-                <h3 className="font-semibold text-white text-base">Verify Test Fix</h3>
+                <ShieldCheck className="w-5 h-5 text-[#0F766E]" />
+                <h3 className="font-semibold text-[#202A32] text-base">Verify Test Fix</h3>
               </div>
               <button
                 onClick={() => setVerifyModalTest(null)}
-                className="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800"
+                className="p-1 text-[#647084] hover:text-[#202A32] rounded hover:bg-[#F7F8FA] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs text-slate-300">
-              <p className="text-slate-400">
+            <div className="space-y-3 text-xs text-[#202A32]">
+              <p className="text-[#647084]">
                 Execute a targeted, multi-iteration verification run in isolated Docker containers to
                 empirically prove this test is stable across repeated executions.
               </p>
 
-              <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-700 space-y-1 font-mono">
-                <span className="text-[10px] text-purple-400 uppercase font-bold block">
+              <div className="p-3 bg-[#F7F8FA] rounded-md border border-[#E5E9E8] space-y-1 font-mono">
+                <span className="text-[10px] text-[#0F766E] uppercase font-bold block">
                   Targeted Test Case
                 </span>
-                <span className="text-white text-xs break-all">{verifyModalTest.node_id}</span>
-                <div className="text-slate-400 text-[11px] pt-1">
+                <span className="text-[#202A32] text-xs break-all">{verifyModalTest.node_id}</span>
+                <div className="text-[#647084] text-[11px] pt-1">
                   Prior Outcome: {verifyModalTest.outcome_classification} (F={verifyModalTest.flakiness_score.toFixed(4)})
                 </div>
               </div>
 
               {/* Iteration Count */}
               <div className="space-y-1">
-                <label className="font-medium text-slate-300 flex justify-between">
+                <label className="font-medium text-[#202A32] flex justify-between">
                   <span>Verification Iterations (Minimum 5 required):</span>
-                  <span className="font-bold text-sky-400">{verifyIterations} iterations</span>
+                  <span className="font-bold text-[#0F766E]">{verifyIterations} iterations</span>
                 </label>
                 <input
                   type="range"
@@ -775,7 +771,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
                   step={1}
                   value={verifyIterations}
                   onChange={(e) => setVerifyIterations(parseInt(e.target.value, 10))}
-                  className="w-full accent-sky-500"
+                  className="w-full accent-[#0F766E] bg-[#E5E9E8] rounded"
                 />
               </div>
 
@@ -785,24 +781,24 @@ export const ReportView: React.FC<ReportViewProps> = ({
                   type="checkbox"
                   checked={verifyShuffle}
                   onChange={(e) => setVerifyShuffle(e.target.checked)}
-                  className="rounded border-slate-700 bg-slate-800 text-sky-500 focus:ring-0"
+                  className="rounded border-[#E5E9E8] text-[#0F766E] focus:ring-0"
                 />
-                <span className="text-slate-300 font-medium">
+                <span className="text-[#202A32] font-medium">
                   Enable pytest random execution order shuffling
                 </span>
               </label>
 
-              <div className="p-3 bg-amber-950/20 border border-amber-900/30 rounded text-[11px] text-amber-300/90 leading-relaxed">
-                <AlertTriangle className="w-3.5 h-3.5 inline mr-1 text-amber-400" />
+              <div className="p-3 bg-[#FEF8EC] border border-[#FADDA8] rounded text-[11px] text-[#D99A22] leading-relaxed">
+                <AlertTriangle className="w-3.5 h-3.5 inline mr-1 text-[#D99A22]" />
                 FLAKELENS requires at least 5 consecutive passing executions with zero flips to mark a fix verified. Single-pass runs will not mark the test fixed.
               </div>
             </div>
 
-            <div className="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[#E5E9E8]">
               <button
                 type="button"
                 onClick={() => setVerifyModalTest(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium"
+                className="px-4 py-2 bg-[#FFFFFF] hover:bg-[#F7F8FA] text-[#202A32] border border-[#E5E9E8] rounded-md text-xs font-medium cursor-pointer"
               >
                 Cancel
               </button>
@@ -810,7 +806,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
                 type="button"
                 onClick={handleLaunchVerification}
                 disabled={verifying}
-                className="inline-flex items-center space-x-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-50"
+                className="inline-flex items-center space-x-1.5 px-4 py-2 bg-[#0F766E] hover:bg-[#0D6860] text-white rounded-md text-xs font-semibold shadow-sm transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {verifying ? (
                   <>
